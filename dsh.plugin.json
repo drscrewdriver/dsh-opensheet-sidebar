@@ -1,0 +1,21 @@
+{
+  "id": "dsh-external/dsh-csv-sidebar",
+  "name": "dsh-csv-sidebar",
+  "version": "0.2.0",
+  "description": {
+    "en": "CSV/TSV/PSV structured preview in the right sidebar (dsh-better-sidebar consumer) with a four-dimension circuit breaker.",
+    "zh": "右侧栏 CSV/TSV/PSV 结构化预览（dsh-better-sidebar 消费者），带四维规模熔断保护。"
+  },
+  "license": "MIT",
+  "engines": {
+    "dsh": ">=0.1.5-rc.1 <0.2.0-0"
+  },
+  "contributes": {
+    "tools": [],
+    "skills": []
+  },
+  "main": "./lib/index.mjs",
+  "client": {
+    "main": "./lib/client.js"
+  }
+}

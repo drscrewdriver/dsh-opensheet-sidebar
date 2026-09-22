@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dsh-csv-sidebar Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 360px;
+      min-width: 280px;
+      max-width: 480px;
+      border-left: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #161b22;
+    }
+    .sidebar-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #30363d;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8b949e;
+      font-size: 14px;
+    }
+
+    /* 文件选择器 */
+    .file-selector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      margin: 12px;
+      border: 2px dashed #30363d;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .file-selector:hover, .file-selector.dragover {
+      border-color: #58a6ff;
+      background: rgba(88,166,255,0.05);
+    }
+    .file-selector .icon { font-size: 32px; margin-bottom: 8px; }
+    .file-selector .text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .file-selector .hint { font-size: 11px; color: #8b949e; }
+
+    /* 熔断警告 */
+    .breaker-warning {
+      margin: 8px 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .breaker-warning.truncated {
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.3);
+    }
+    .breaker-warning.blocked {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+    .breaker-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .breaker-title { font-weight: 600; }
+    .breaker-stats { color: #8b949e; font-size: 11px; display: flex; gap: 6px; }
+    .breaker-details { margin-top: 6px; color: #8b949e; font-size: 11px; }
+    .breaker-item { margin: 2px 0; }
+
+    /* 统计栏 */
+    .stats-bar {
+      padding: 6px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border-bottom: 1px solid #21262d;
+    }
+    .stats-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .stats-item { font-size: 11px; color: #8b949e; white-space: nowrap; }
+
+    /* 过滤 */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border-bottom: 1px solid #21262d;
+    }
+    .filter-input {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      color: #e6edf3;
+      outline: none;
+    }
+    .filter-input:focus { border-color: #58a6ff; }
+    .filter-input::placeholder { color: #484f58; }
+    .filter-count { font-size: 10px; color: #8b949e; white-space: nowrap; }
+
+    /* 表格 */
+    .table-scroll { flex: 1; overflow: auto; }
+    .data-table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .data-table th, .data-table td {
+      padding: 4px 10px;
+      white-space: nowrap;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid #21262d;
+    }
+    .data-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #161b22;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+      color: #8b949e;
+    }
+    .data-table th:hover { background: #1c2128; color: #e6edf3; }
+    .data-table td { color: #e6edf3; }
+    .data-table td.index { color: #484f58; font-size: 10px; text-align: right; padding-right: 8px; border-right: 1px solid #21262d; }
+    .data-table th.right, .data-table td.right { text-align: right; }
+    .data-table tr:hover td { background: rgba(88,166,255,0.05); }
+    .sort-icon { font-size: 10px; opacity: 0.4; }
+    .data-table th:hover .sort-icon { opacity: 0.8; }
+
+    /* 底部 */
+    .table-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 12px;
+      border-top: 1px solid #21262d;
+      font-size: 10px; color: #8b949e;
+    }
+    .clear-sort { background: none; border: none; color: #58a6ff; cursor: pointer; font-size: 10px; }
+    .clear-sort:hover { text-decoration: underline; }
+
+    /* 操作栏 */
+    .actions {
+      padding: 8px 12px;
+      border-top: 1px solid #21262d;
+    }
+    .reset-btn {
+      width: 100%;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 12px;
+      text-align: center;
+    }
+    .reset-btn:hover { background: #30363d; color: #e6edf3; }
+
+    /* 空状态 */
+    .empty-state { text-align: center; color: #484f58; padding: 48px 16px; }
+    .empty-icon { font-size: 36px; margin-bottom: 8px; }
+    .empty-hint { font-size: 11px; margin-top: 4px; }
+
+    /* 加载中 */
+    .loading { text-align: center; padding: 48px 16px; color: #8b949e; }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 2px solid #30363d;
+      border-top-color: #58a6ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="main-area">
+    <div>← 将 CSV 文件拖到右侧侧边栏，或点击选择</div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span>📊</span>
+      <span>CSV Preview</span>
+    </div>
+    <div class="sidebar-content" id="app"></div>
+  </div>
+
+  <script type="module">
+    // === 熔断器 ===
+    const DEFAULT_CONFIG = {
+      maxFileSize: 5 * 1024 * 1024,
+      maxRows: 10000,
+      maxCols: 100,
+      maxCellLength: 10240,
+      previewRows: 200,
+      previewCols: 50,
+    };
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+      return (bytes/(1024*1024)).toFixed(1) + ' MB';
+    }
+
+    function formatNumber(n) { return n.toLocaleString('zh-CN'); }
+
+    // === 简易 CSV 解析（浏览器原生） ===
+    function parseCSV(text, config = DEFAULT_CONFIG) {
+      const warnings = [];
+      let state = 'OK';
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length === 0) return { state: 'OK', headers: [], rows: [], warnings: [], totalRows: 0, totalCols: 0, fileName: '', fileSize: 0 };
+
+      // 检测分隔符
+      const firstLine = lines[0];
+      const delim = firstLine.split('\t').length > firstLine.split(',').length ? '\t' : ',';
+
+      // 解析一行（处理引号）
+      function splitLine(line) {
+        const result = [];
+        let current = '';
+        let inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (inQuote) {
+            if (ch === '"') {
+              if (i + 1 < line.length && line[i+1] === '"') { current += '"'; i++; }
+              else inQuote = false;
+            } else { current += ch; }
+          } else {
+            if (ch === '"') inQuote = true;
+            else if (ch === delim) { result.push(current); current = ''; }
+            else current += ch;
+          }
+        }
+        result.push(current);
+        return result;
+      }
+
+      const headers = splitLine(lines[0]).slice(0, config.maxCols);
+      if (splitLine(lines[0]).length > config.maxCols) {
+        warnings.push(`列数 ${splitLine(lines[0]).length} 超过上限 ${config.maxCols}，截断到前 ${config.maxCols} 列`);
+      }
+
+      const rows = [];
+      const totalDataRows = lines.length - 1;
+
+      for (let i = 1; i < lines.length; i++) {
+        if (rows.length >= config.previewRows) {
+          if (state !== 'TRUNCATED') {
+            state = 'TRUNCATED';
+            warnings.push(`行数 ${totalDataRows} 超过上限 ${config.maxRows}，截断到前 ${config.previewRows} 行预览`);
+          }
+          break;
+        }
+        const cells = splitLine(lines[i]).slice(0, config.maxCols).map(c => {
+          if (c.length > 500) return c.slice(0, 500) + `…(${c.length} chars)`;
+          return c;
+        });
+        rows.push(cells);
+      }
+
+      if (totalDataRows > config.maxRows && state !== 'TRUNCATED') {
+        state = 'TRUNCATED';
+        warnings.push(`行数 ${totalDataRows} 超过上限 ${config.maxRows}`);
+      }
+
+      return { state, headers, rows, warnings, totalRows: totalDataRows, totalCols: headers.length, fileName: '', fileSize: 0, delimiter: delim };
+    }
+
+    // === 排序 ===
+    function sortRows(rows, sort) {
+      if (!sort) return rows;
+      const { col, dir } = sort;
+      const m = dir === 'asc' ? 1 : -1;
+      return [...rows].sort((a, b) => {
+        const va = a[col] ?? '', vb = b[col] ?? '';
+        const na = Number(va), nb = Number(vb);
+        if (!isNaN(na) && !isNaN(nb)) return (na - nb) * m;
+        return va.localeCompare(vb, 'zh-CN') * m;
+      });
+    }
+
+    // === 渲染 ===
+    const app = document.getElementById('app');
+    let currentResult = null;
+    let currentSort = null;
+    let filterText = '';
+
+    function render() {
+      if (!currentResult) {
+        app.innerHTML = `
+          <div class="file-selector" id="dropzone">
+            <div class="icon">📊</div>
+            <div class="text">拖拽 CSV 文件到这里</div>
+            <div class="hint">或点击选择 · 支持 .csv / .tsv / .txt</div>
+            <input type="file" id="fileInput" accept=".csv,.tsv,.txt" style="display:none">
+          </div>`;
+        const dz = document.getElementById('dropzone');
+        const fi = document.getElementById('fileInput');
+        dz.addEventListener('click', () => fi.click());
+        dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+        dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+        dz.addEventListener('drop', e => {
+          e.preventDefault();
+          dz.classList.remove('dragover');
+          if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+        });
+        fi.addEventListener('change', e => { if (e.target.files.length) loadFile(e.target.files[0]); });
+        return;
+      }
+
+      const r = currentResult;
+      let filtered = r.rows;
+      if (filterText) {
+        const lower = filterText.toLowerCase();
+        filtered = r.rows.filter(row => row.some(c => (c??'').toLowerCase().includes(lower)));
+      }
+      const display = sortRows(filtered, currentSort);
+
+      let html = '';
+
+      // 熔断警告
+      if (r.state === 'TRUNCATED') {
+        html += `<div class="breaker-warning truncated">
+          <div class="breaker-header"><span>⚠️</span><span class="breaker-title">数据已截断</span></div>
+          <div class="breaker-stats"><span>原始 ${formatNumber(r.totalRows)} 行 × ${r.totalCols} 列</span><span>·</span><span>${formatSize(r.fileSize)}</span></div>
+          ${r.warnings.map(w => `<div class="breaker-details">• ${w}</div>`).join('')}
+        </div>`;
+      } else if (r.state === 'BLOCKED') {
+        html += `<div class="breaker-warning blocked">
+          <div class="breaker-header"><span>🚫</span><span class="breaker-title">文件过大，已阻止加载</span></div>
+        </div>`;
+      }
+
+      // 统计栏
+      html += `<div class="stats-bar">
+        <div class="stats-row">
+          <span class="stats-item">📄 ${r.fileName}</span>
+          <span class="stats-item">${formatSize(r.fileSize)}</span>
+        </div>
+        <div class="stats-row">
+          <span class="stats-item">${r.state === 'TRUNCATED' ? `预览 ${formatNumber(display.length)} / ${formatNumber(r.totalRows)} 行` : `${formatNumber(r.totalRows)} 行`}</span>
+          <span class="stats-item">${r.totalCols} 列</span>
+          ${r.delimiter !== ',' ? `<span class="stats-item" style="background:#21262d;padding:1px 6px;border-radius:4px;font-size:10px">分隔符: ${r.delimiter === '\t' ? 'TAB' : r.delimiter}</span>` : ''}
+        </div>
+      </div>`;
+
+      // 过滤
+      html += `<div class="filter-bar">
+        <input class="filter-input" placeholder="🔍 过滤行…" value="${filterText}" id="filterInput">
+        ${filterText ? `<span class="filter-count">${display.length} / ${r.rows.length} 行</span>` : ''}
+      </div>`;
+
+      // 表格
+      html += `<div class="table-scroll"><table class="data-table"><thead><tr>
+        <th style="text-align:right;padding-right:8px;border-right:1px solid #21262d">#</th>
+        ${r.headers.map((h, i) => {
+          const sorted = currentSort?.col === i;
+          const icon = sorted ? (currentSort.dir === 'asc' ? ' ↑' : ' ↓') : ' ↕';
+          return `<th onclick="window._sort(${i})">${h}<span class="sort-icon">${icon}</span></th>`;
+        }).join('')}
+      </tr></thead><tbody>
+        ${display.map((row, ri) => `<tr>
+          <td class="index">${ri + 1}</td>
+          ${row.map(c => `<td>${c}</td>`).join('')}
+        </tr>`).join('')}
+      </tbody></table></div>`;
+
+      // 底部
+      html += `<div class="table-footer">
+        ${currentSort ? `<button class="clear-sort" onclick="window._clearSort()">✕ 清除排序</button>` : '<span></span>'}
+        <span>${display.length} 行${filterText ? ` (过滤自 ${r.rows.length})` : ''}</span>
+      </div>`;
+
+      // 操作栏
+      html += `<div class="actions"><button class="reset-btn" onclick="window._reset()">📂 打开其他文件</button></div>`;
+
+      app.innerHTML = html;
+
+      // 绑定过滤输入
+      const fi2 = document.getElementById('filterInput');
+      if (fi2) fi2.addEventListener('input', e => { filterText = e.target.value; render(); });
+    }
+
+    window._sort = (col) => {
+      if (currentSort?.col === col) {
+        currentSort = currentSort.dir === 'asc' ? { col, dir: 'desc' } : null;
+      } else {
+        currentSort = { col, dir: 'asc' };
+      }
+      render();
+    };
+    window._clearSort = () => { currentSort = null; render(); };
+    window._reset = () => { currentResult = null; currentSort = null; filterText = ''; render(); };
+
+    function loadFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const result = parseCSV(text);
+        result.fileName = file.name;
+        result.fileSize = file.size;
+        currentResult = result;
+        currentSort = null;
+        filterText = '';
+        render();
+      };
+      reader.readAsText(file);
+    }
+
+    // 全页面拖拽
+    document.body.addEventListener('dragover', e => e.preventDefault());
+    document.body.addEventListener('drop', e => {
+      e.preventDefault();
+      if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+    });
+
+    render();
+  </script>
+</body>
+</html>

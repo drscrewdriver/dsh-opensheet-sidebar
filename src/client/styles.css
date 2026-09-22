@@ -1,0 +1,366 @@
+/*
+ * dsh-csv-sidebar — stylesheet.
+ *
+ * Injected at runtime by the client half (a DSH plugin has no CSS entry of its
+ * own, so the build inlines this file as a string and `apply` appends one
+ * <style> tag inside a `ctx.effect`, whose disposer removes it on unload).
+ *
+ * Every colour is a DSH design token (`--dsw-alias-*`) with a neutral
+ * fallback, so the table follows the active skin instead of fighting it.
+ */
+
+.csv-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+  background: var(--dsw-alias-bg-layer-1, transparent);
+}
+
+/* ── File picker ─────────────────────────────────────────────────────────── */
+
+.csv-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 12px;
+  padding: 32px 16px;
+  border: 2px dashed var(--dsw-alias-border-l2, #3a3a3a);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-layer-2, transparent);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.csv-picker:hover {
+  border-color: var(--dsw-alias-brand-primary, #60a5fa);
+  background: var(--dsw-alias-interactive-bg-hover, transparent);
+}
+
+.csv-picker--active {
+  border-color: var(--dsw-alias-brand-primary, #60a5fa);
+  background: var(--dsw-alias-interactive-bg-active, transparent);
+}
+
+.csv-picker--invalid {
+  border-color: var(--dsw-alias-state-error-primary, #ef4444);
+}
+
+.csv-picker__icon {
+  color: var(--dsw-alias-label-tertiary, #888);
+  margin-bottom: 4px;
+}
+
+.csv-picker__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+}
+
+.csv-picker__hint {
+  font-size: 11px;
+  color: var(--dsw-alias-label-caption, #888);
+}
+
+/* ── Breaker warning ─────────────────────────────────────────────────────── */
+
+.csv-warning {
+  margin: 8px 12px 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--dsw-alias-state-warn-primary, #fbbf24);
+  background: var(--dsw-alias-state-warn-tertiary, rgba(251, 191, 36, 0.1));
+  font-size: 12px;
+}
+
+.csv-warning--blocked {
+  border-color: var(--dsw-alias-state-error-primary, #ef4444);
+}
+
+.csv-warning__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--dsw-alias-state-warn-label, #fbbf24);
+}
+
+.csv-warning--blocked .csv-warning__head {
+  color: var(--dsw-alias-state-error-primary, #ef4444);
+}
+
+.csv-warning__list {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--dsw-alias-label-secondary, #aaa);
+  font-size: 11px;
+}
+
+.csv-warning__list li {
+  margin: 2px 0;
+}
+
+/* ── Stats bar ───────────────────────────────────────────────────────────── */
+
+.csv-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+}
+
+.csv-stats__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.csv-stats__item {
+  font-size: 11px;
+  color: var(--dsw-alias-label-secondary, #aaa);
+  white-space: nowrap;
+}
+
+.csv-stats__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+}
+
+.csv-stats__tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  background: var(--dsw-alias-interactive-bg-hover, rgba(255, 255, 255, 0.06));
+}
+
+/* ── Data table ──────────────────────────────────────────────────────────── */
+
+.csv-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.csv-table__filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+}
+
+.csv-table__input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--dsw-alias-border-l2, #3a3a3a);
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-layer-2, transparent);
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+  font-size: 12px;
+  outline: none;
+}
+
+.csv-table__input:focus {
+  border-color: var(--dsw-alias-brand-primary, #60a5fa);
+}
+
+.csv-table__count {
+  font-size: 10px;
+  color: var(--dsw-alias-label-caption, #888);
+  white-space: nowrap;
+}
+
+.csv-table__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.csv-table__grid {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.csv-table__th,
+.csv-table__td {
+  max-width: 220px;
+  padding: 4px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--dsw-alias-border-l1, #1f1f1f);
+}
+
+.csv-table__th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--dsw-alias-bg-layer-3, #1a1a1a);
+  color: var(--dsw-alias-label-secondary, #aaa);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+}
+
+.csv-table__th:hover {
+  background: var(--dsw-alias-interactive-bg-hover, #252525);
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+}
+
+.csv-table__th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.csv-table__sort {
+  font-size: 10px;
+  opacity: 0.45;
+}
+
+.csv-table__th:hover .csv-table__sort {
+  opacity: 0.9;
+}
+
+.csv-table__td {
+  color: var(--dsw-alias-label-primary, #d8d8d8);
+}
+
+.csv-table__td--right,
+.csv-table__th--right {
+  text-align: right;
+}
+
+.csv-table__th--index,
+.csv-table__td--index {
+  position: sticky;
+  left: 0;
+  background: var(--dsw-alias-bg-layer-3, #1a1a1a);
+  color: var(--dsw-alias-label-caption, #777);
+  font-size: 10px;
+  text-align: right;
+  border-right: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+}
+
+.csv-table__tr:hover .csv-table__td {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(96, 165, 250, 0.05));
+}
+
+.csv-table__footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px;
+  border-top: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+  font-size: 10px;
+  color: var(--dsw-alias-label-caption, #888);
+}
+
+.csv-table__link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--dsw-alias-link, #60a5fa);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.csv-table__link:hover {
+  text-decoration: underline;
+}
+
+.csv-table__spacer {
+  margin-left: auto;
+}
+
+/* ── Empty / loading / error ─────────────────────────────────────────────── */
+
+.csv-empty,
+.csv-loading,
+.csv-error {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+
+.csv-empty__title,
+.csv-error__title {
+  font-size: 13px;
+  color: var(--dsw-alias-label-secondary, #aaa);
+}
+
+.csv-empty__hint,
+.csv-error__hint {
+  font-size: 11px;
+  color: var(--dsw-alias-label-caption, #777);
+  max-width: 260px;
+}
+
+.csv-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--dsw-alias-border-l2, #3a3a3a);
+  border-top-color: var(--dsw-alias-brand-primary, #60a5fa);
+  border-radius: 50%;
+  animation: csv-spin 0.8s linear infinite;
+}
+
+@keyframes csv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────────── */
+
+.csv-actions {
+  padding: 8px 12px;
+  border-top: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+}
+
+.csv-button {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid var(--dsw-alias-border-l2, #3a3a3a);
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-layer-2, transparent);
+  color: var(--dsw-alias-label-secondary, #aaa);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.csv-button:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(255, 255, 255, 0.08));
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csv-spinner {
+    animation-duration: 2s;
+  }
+}
