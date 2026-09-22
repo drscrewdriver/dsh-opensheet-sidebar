@@ -4,6 +4,8 @@
 
 **包身份改名：`dsh-csv-sidebar` → `dsh-opensheet-sidebar`。** 功能与 0.3.0 完全相同，不改行为，只换身份与显示名。
 
+> **发布记录（2026-09-22）**：npm `dsh-opensheet-sidebar@1.0.0`，dist-tags `latest` + `dsh-0.1.5`；49 files / 97.2 kB，tarball shasum `88b7fed194c15cd6cd59c1d87e69ae9e8503b5aa`。发布后从 registry 回拉 tarball 复验：`lib/client.js` 与仓库构建逐字节一致（`43CF34FDCB65…`），bundle 内模块 id = `dsh-opensheet-sidebar`。profile 已由 `github:` 钉版迁至该 npm 版本（spec 落盘为精确值 `1.0.0`）。
+
 名字是双关：**Open**（打开）＋ **Open**（开放标准）—— 一个词覆盖"打开表格"与"用不依赖专有库的方式读表格"两层意思。双关只活在名字里，功能字段仍严格字面（`exts` 只填真实后缀）。
 
 > 命名过程留痕：先落成复数 `opensheets`，发布前 1 分钟内修正为单数 `opensheet`（专有名词单数更像品牌，且与 OpenDocument 一系的联想更强）。此条目描述的是最终身份。

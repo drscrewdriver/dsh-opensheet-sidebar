@@ -198,6 +198,14 @@ $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $manifestPath = Join-Path $profileDir 'package.json'
 $patchPath = Join-Path $profileDir 'cordis.patch.yml'
 
+# A migration may legitimately be re-run (e.g. after a version bump), and the
+# old identity is often already gone. Removing a package that is not a
+# dependency is an ERROR in pnpm, so probe first instead of failing halfway
+# through — this step is idempotent on purpose.
+$manifestBefore = Get-Content $manifestPath -Raw | ConvertFrom-Json
+$oldInstalled = @($manifestBefore.dependencies.PSObject.Properties.Name) -contains $OldName
+$patchHasOldRow = [System.IO.File]::ReadAllText($patchPath).Contains("- id: $OldName")
+
 Write-Host "migrate-profile: $OldName -> $newName" -ForegroundColor Cyan
 Write-Host "  profile : $profileDir" -ForegroundColor DarkGray
 Write-Host "  spec    : $NewSpec" -ForegroundColor DarkGray
@@ -212,8 +220,16 @@ Write-Host ''
 Write-Host 'plan:' -ForegroundColor Cyan
 Write-Host "  1. back up package.json + cordis.patch.yml  (.bak-$stamp)"
 Write-Host "  2. dsh plugin --profile $Profile add $NewSpec        <- new identity FIRST"
-Write-Host "  3. dsh plugin --profile $Profile remove $OldName     <- old identity SECOND (reconcile drops it from bundles)"
-Write-Host "  4. swap '- id: $OldName' -> '- id: $newName' in cordis.patch.yml"
+if ($oldInstalled) {
+  Write-Host "  3. dsh plugin --profile $Profile remove $OldName     <- old identity SECOND (reconcile drops it from bundles)"
+} else {
+  Write-Host "  3. skip remove $OldName — not a dependency of this profile (already migrated)"
+}
+if ($patchHasOldRow) {
+  Write-Host "  4. swap '- id: $OldName' -> '- id: $newName' in cordis.patch.yml"
+} else {
+  Write-Host "  4. skip the patch row swap — no '- id: $OldName' present"
+}
 Write-Host '  5. verify deps / bundles / node_modules / composed row'
 
 # ── 1. backups ───────────────────────────────────────────────────────────────
@@ -233,13 +249,22 @@ if (-not $DryRun) {
   Invoke-DshPlugin -Dsh $dsh -Label "add $NewSpec" -Arguments @('plugin', '--profile', $Profile, 'add', $NewSpec)
 
   Write-Host "[3/5] remove $OldName" -ForegroundColor Cyan
-  Invoke-DshPlugin -Dsh $dsh -Label "remove $OldName" -Arguments @('plugin', '--profile', $Profile, 'remove', $OldName)
+  if ($oldInstalled) {
+    Invoke-DshPlugin -Dsh $dsh -Label "remove $OldName" -Arguments @('plugin', '--profile', $Profile, 'remove', $OldName)
+  } else {
+    Write-Host "        skipped — $OldName is not a dependency of this profile" -ForegroundColor DarkGray
+  }
 
   # ── 4. the profile patch row id ────────────────────────────────────────────
   Write-Host "[4/5] swap the patch row id in cordis.patch.yml" -ForegroundColor Cyan
-  $utf8 = New-Object System.Text.UTF8Encoding($false)
-  $patchText = [System.IO.File]::ReadAllText($patchPath)
-  [System.IO.File]::WriteAllText($patchPath, $patchText.Replace("- id: $OldName", "- id: $newName"), $utf8)
+  if ($patchHasOldRow) {
+    $utf8 = New-Object System.Text.UTF8Encoding($false)
+    $patchText = [System.IO.File]::ReadAllText($patchPath)
+    [System.IO.File]::WriteAllText($patchPath, $patchText.Replace("- id: $OldName", "- id: $newName"), $utf8)
+    Write-Host "        '$OldName' -> '$newName'" -ForegroundColor DarkGray
+  } else {
+    Write-Host "        skipped — no '- id: $OldName' row to swap" -ForegroundColor DarkGray
+  }
 }
 
 # ── 5. verification (also the whole of a DryRun) ─────────────────────────────
