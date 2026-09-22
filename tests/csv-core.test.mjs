@@ -43,7 +43,7 @@ const check = (label, fn) => {
   console.log(`  ok  ${label}`)
 }
 
-console.log('dsh-opensheets-sidebar :: csv core')
+console.log('dsh-opensheet-sidebar :: csv core')
 
 // ── 1. Happy path ────────────────────────────────────────────────────────────
 check('plain CSV parses to headers + rows', () => {
@@ -196,4 +196,4 @@ check('every warning template interpolates completely (no literal {found})', () 
 })
 
 rmSync(outDir, { recursive: true, force: true })
-console.log(`\ndsh-opensheets-sidebar :: ${checks} checks passed, 0 failed`)
+console.log(`\ndsh-opensheet-sidebar :: ${checks} checks passed, 0 failed`)

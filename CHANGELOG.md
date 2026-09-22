@@ -1,19 +1,23 @@
-# Changelog — dsh-opensheets-sidebar
+# Changelog — dsh-opensheet-sidebar
 
 ## 1.0.0 — 2026-09-22
 
-**包身份改名：`dsh-csv-sidebar` → `dsh-opensheets-sidebar`。** 功能与 0.3.0 完全相同，不改行为，只换身份与显示名。
+**包身份改名：`dsh-csv-sidebar` → `dsh-opensheet-sidebar`。** 功能与 0.3.0 完全相同，不改行为，只换身份与显示名。
+
+名字是双关：**Open**（打开）＋ **Open**（开放标准）—— 一个词覆盖"打开表格"与"用不依赖专有库的方式读表格"两层意思。双关只活在名字里，功能字段仍严格字面（`exts` 只填真实后缀）。
+
+> 命名过程留痕：先落成复数 `opensheets`，发布前 1 分钟内修正为单数 `opensheet`（专有名词单数更像品牌，且与 OpenDocument 一系的联想更强）。此条目描述的是最终身份。
 
 ### Changed
 
-- 包名 / 仓库名 / `dsh.plugin.json#id` / `cordis.patch.yml` 的 row id+name → `dsh-opensheets-sidebar`。**这几处必须同步**：客户端模块 id 由 `package.json#name` 派生，而行的 `name:` 是 client-modules 定位包清单的依据，漏一处 = 宿主行在、客户端半边静默不加载（即 0.1.0 那类故障）。
+- 包名 / 仓库名 / `dsh.plugin.json#id` / `cordis.patch.yml` 的 row id+name → `dsh-opensheet-sidebar`。**这几处必须同步**：客户端模块 id 由 `package.json#name` 派生，而行的 `name:` 是 client-modules 定位包清单的依据，漏一处 = 宿主行在、客户端半边静默不加载（即 0.1.0 那类故障）。
 - 前缀型 id 一并改名：`TAB_ID` / `VIEWER_ID` / `XLSX_VIEWER_ID` / 样式标签 id / locale 命名空间。
 - 侧栏 tab 显示名 `CSV` → `Sheets`（zh：`表格`）。预览器标题保持描述性（`CSV table` / `Spreadsheet table`）——按文件类型说清是什么，而不是套产品名。
 - 版本跨到 1.0.0：对消费者而言这是破坏性变更（包身份变了），不是小版本。
 
 ### Migration（旧身份 → 新身份）
 
-1. `dsh plugin --profile <p> add github:drscrewdriver/dsh-opensheets-sidebar#<sha>`
+1. `dsh plugin --profile <p> add github:drscrewdriver/dsh-opensheet-sidebar#<sha>`
 2. `dsh plugin --profile <p> remove dsh-csv-sidebar` —— `reconcilePlugins` 会自动把旧名字从 `dsh.profile.bundles` 摘掉
 3. 把 profile `cordis.patch.yml` 里那条 `- id: dsh-csv-sidebar` 换成新 id（针对不存在 id 的补丁是静默空操作，留着只会误导后来者）
 4. 重启宿主一次

@@ -9,7 +9,7 @@
  */
 
 /** Namespace for every key below. */
-export const NS = 'dsh-opensheets-sidebar'
+export const NS = 'dsh-opensheet-sidebar'
 
 /** The two built-in languages this plugin ships. */
 export const dictionaries: Record<string, Record<string, string>> = {

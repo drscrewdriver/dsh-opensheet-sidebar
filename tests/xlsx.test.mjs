@@ -168,7 +168,7 @@ const check = async (label, fn) => {
   console.log(`  ok  ${label}`)
 }
 
-console.log('dsh-opensheets-sidebar :: xlsx core')
+console.log('dsh-opensheet-sidebar :: xlsx core')
 
 await check('the zip reader finds every part and its sizes', () => {
   const entries = xlsx.listZipEntries(fixture())
@@ -326,4 +326,4 @@ await check('GATE: every workbook warning renders with no leftover placeholder',
 })
 
 rmSync(outDir, { recursive: true, force: true })
-console.log(`\ndsh-opensheets-sidebar :: ${checks} checks passed, 0 failed`)
+console.log(`\ndsh-opensheet-sidebar :: ${checks} checks passed, 0 failed`)

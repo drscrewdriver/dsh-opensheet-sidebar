@@ -1,9 +1,9 @@
 /** Tab type id — package-prefixed so it cannot collide with a built-in type. */
-export declare const TAB_ID = "dsh-opensheets-sidebar:tab";
+export declare const TAB_ID = "dsh-opensheet-sidebar:tab";
 /** File-viewer id, as it appears in the Side card's preview inventory. */
-export declare const VIEWER_ID = "dsh-opensheets-sidebar:viewer";
+export declare const VIEWER_ID = "dsh-opensheet-sidebar:viewer";
 /** Workbook viewer id — a separate registration because it needs a custom loader. */
-export declare const XLSX_VIEWER_ID = "dsh-opensheets-sidebar:xlsx";
+export declare const XLSX_VIEWER_ID = "dsh-opensheet-sidebar:xlsx";
 /** Services that must be published before `apply` runs. */
 export declare const inject: readonly ["betterSidebar", "locale"];
 /**

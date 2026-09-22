@@ -1,5 +1,5 @@
 /*
- * dsh-opensheets-sidebar — stylesheet.
+ * dsh-opensheet-sidebar — stylesheet.
  *
  * Injected at runtime by the client half (a DSH plugin has no CSS entry of its
  * own, so the build inlines this file as a string and `apply` appends one

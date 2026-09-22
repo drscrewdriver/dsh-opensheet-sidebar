@@ -1,6 +1,6 @@
 {
-  "id": "dsh-external/dsh-opensheets-sidebar",
-  "name": "dsh-opensheets-sidebar",
+  "id": "dsh-external/dsh-opensheet-sidebar",
+  "name": "dsh-opensheet-sidebar",
   "version": "1.0.0",
   "description": {
     "en": "CSV/TSV/PSV structured preview plus xlsx/xlsm workbooks with sheet tabs in the right sidebar (dsh-better-sidebar consumer), guarded by a circuit breaker with two zip-container gates.",

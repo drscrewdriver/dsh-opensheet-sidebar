@@ -1,8 +1,12 @@
-# dsh-opensheets-sidebar
+# dsh-opensheet-sidebar
 
-右侧栏 CSV 结构化预览插件（[dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 消费者），带**四维熔断保护**：任何输入都不能让侧栏卡死。
+右侧栏表格预览插件（[dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 消费者）：`csv` / `tsv` / `psv` 与 `xlsx` / `xlsm` 都以结构化表格打开，带**熔断保护**——任何输入都不能让侧栏卡死。
 
-> **v0.2.0 是一次集成方式的重写**：v0.1.0 的客户端半边不是 DSH 的客户端模块契约（ES module + `activate()` + `ctx.sessionProjections`），因此**装上去也不会显示**。0.2.0 按 plugin-framework 标准重做，见下「为什么 v0.1.0 不显示」。
+> **名字是双关，写在这里免得被当成拼写错误**：`OpenSheet` 同时读作「**打开**表格」（open the sheet，动词）与「**开放标准**的表格」（open-standard sheet —— OpenDocument 那一系的开源表格格式）。一个词说清了它做的两件事：打开，以及用一种不依赖专有库的方式读。
+>
+> 边界：双关只活在**名字**里。功能字段一律保持字面意思 —— `exts` 只填真实后缀（`csv`/`tsv`/`psv`/`xlsx`/`xlsm`），协议字段不塞品牌词。
+
+> **v0.2.0 是一次集成方式的重写**：v0.1.0（当时名 `dsh-csv-sidebar`）的客户端半边不是 DSH 的客户端模块契约（ES module + `activate()` + `ctx.sessionProjections`），因此**装上去也不会显示**。0.2.0 按 plugin-framework 标准重做，见下「为什么 v0.1.0 不显示」。
 
 ---
 
@@ -49,7 +53,7 @@
 | 目录结构 | `src/ lib/ assets/ tests/ scripts/` + `screenshots.json` + `dsh.plugin.json` + README/CHANGELOG |
 | 零依赖 | **无运行时依赖**：CSV 解析器与熔断器都是本地模块，客户端 bundle 只 externals React（43 KB） |
 | 样式 | 无 CSS 入口 → `styles.css` 由构建内联为字符串，`apply` 里插入一个 `<style>` 并登记 disposer；配色全用 `--dsw-alias-*` 语义 token |
-| 多语言 | 自有命名空间 `dsh-opensheets-sidebar`，zh/en 字典经 `locale.register(NS, tag, dict)` 注册；缺服务时回退内置英文字典，缺 key 时渲染 key 本身（可见而非空白） |
+| 多语言 | 自有命名空间 `dsh-opensheet-sidebar`，zh/en 字典经 `locale.register(NS, tag, dict)` 注册；缺服务时回退内置英文字典，缺 key 时渲染 key 本身（可见而非空白） |
 | 软依赖纪律 | 不 import `dsh-better-sidebar` 任何值/类型（`seams.ts` 只做结构声明）；`betterSidebar` 缺席时**响亮 warn 并保持惰性**，不注册半个面板 |
 
 ---
@@ -81,7 +85,7 @@ npm run verify    # build && test
 `npm test` 实测输出（2026-09-22）：
 
 ```
-dsh-opensheets-sidebar :: csv core
+dsh-opensheet-sidebar :: csv core
   ok  plain CSV parses to headers + rows
   ok  quoted delimiter, doubled quote and embedded newline survive
   ok  semicolon and tab files are sniffed, not assumed
@@ -95,7 +99,7 @@ dsh-opensheets-sidebar :: csv core
   ok  blank lines and a trailing newline never mint rows
   ok  an empty document is OK with zero rows (never a throw)
 
-dsh-opensheets-sidebar :: 12 checks passed, 0 failed
+dsh-opensheet-sidebar :: 12 checks passed, 0 failed
 ```
 
 构建期门禁（`scripts/build.mjs`）在写出产物后：用 `node:vm` + 桩 `window.__ModuleLoader__` 真跑一遍 bundle，断言 `load()` 被调用、`id` 等于包名、`factory()` 返回带 `apply` 与 `inject` 的对象；并拒绝任何 Node 内置模块请求。**加载不了的 bundle 在构建阶段就红灯，不会带病进宿主。**
@@ -114,25 +118,25 @@ dsh plugin --profile <profile> add <path-to-plugin>
 
 ```bash
 # 1) 复制本包
-#    → ~/.dsh/profiles/<profile>/node_modules/dsh-opensheets-sidebar
-# 2) 把 "dsh-opensheets-sidebar" 加进该 profile package.json 的 dsh.profile.bundles 数组
+#    → ~/.dsh/profiles/<profile>/node_modules/dsh-opensheet-sidebar
+# 2) 把 "dsh-opensheet-sidebar" 加进该 profile package.json 的 dsh.profile.bundles 数组
 # 3) 把本包 cordis.patch.yml 的 insert 行追加到该 profile 的 cordis.patch.yml
 ```
 
 > ⚠️ **第 2 步是最容易漏、且漏了完全静默的一步。** bundle 层只在 profile 的
 > `dsh.profile.bundles` 列到本包时才被合成；只做第 1、3 步的结果是：包装好了、
-> `cordis.patch.yml` 里也有 `- id: dsh-opensheets-sidebar`，但那一行**没有可作用的行可打**——
+> `cordis.patch.yml` 里也有 `- id: dsh-opensheet-sidebar`，但那一行**没有可作用的行可打**——
 > 插件不加载，控制台一声不响。第 3 步的 `disabled: false` 只是「把已插入的行显式启用」，
 > 它本身不会插入任何行。
 
 **装完先验证再重启**（不启动任何服务）：
 
 ```bash
-dsh --profile <profile> --dump-config | Select-String dsh-opensheets-sidebar
+dsh --profile <profile> --dump-config | Select-String dsh-opensheet-sidebar
 # 期望看到：
-#   # == dsh-opensheets-sidebar, patched by ...\cordis.patch.yml
-#   - id: dsh-opensheets-sidebar
-#     name: dsh-opensheets-sidebar
+#   # == dsh-opensheet-sidebar, patched by ...\cordis.patch.yml
+#   - id: dsh-opensheet-sidebar
+#     name: dsh-opensheet-sidebar
 #     disabled: false
 ```
 

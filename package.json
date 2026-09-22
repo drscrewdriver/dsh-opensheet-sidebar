@@ -1,5 +1,5 @@
 {
-  "name": "dsh-opensheets-sidebar",
+  "name": "dsh-opensheet-sidebar",
   "version": "1.0.0",
   "description": "DSH web plugin (dsh-better-sidebar consumer): render CSV/TSV/PSV files and xlsx/xlsm workbooks as a structured, sortable, filterable table in the right sidebar — with sheet tabs and a circuit breaker (rows/cols/cells plus the two zip-container gates) so no input can freeze the browser.",
   "type": "module",
