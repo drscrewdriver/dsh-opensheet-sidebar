@@ -45,6 +45,7 @@ param(
   [Parameter(Mandatory = $true)][string] $NewSpec,
   [string] $OldName = 'dsh-csv-sidebar',
   [string] $NewName = '',
+  [string] $Registry = 'https://registry.npmjs.org',
   # NOTE: $PSScriptRoot is not populated while a param block's default is being
   # evaluated, so the checkout path is resolved in the body instead.
   [string] $RepoPath = '',
@@ -105,6 +106,80 @@ function Invoke-DshPlugin {
   if ($LASTEXITCODE -ne 0) { throw "$Label failed twice (exit $LASTEXITCODE)" }
 }
 
+# Resolve the target spec BEFORE touching anything. A spec that does not exist
+# today — an npm version that was never published, an unreachable repo — must
+# fail here, not halfway through a migration. (Learned the hard way: a README
+# example of the form `name@1.0.0` reads as "runnable now" even when nothing
+# was published under that name yet.)
+function Assert-SpecResolves {
+  param([string] $Spec, [string] $Registry)
+
+  # github:owner/repo[#ref]
+  if ($Spec -like 'github:*') {
+    $body = $Spec.Substring(7)
+    $ref = ''
+    if ($body.Contains('#')) {
+      $ref = ($body -split '#')[1]
+      $body = ($body -split '#')[0]
+    }
+    $url = $body
+    if ($url -notmatch '^[a-z]+://' -and $url -notmatch '^git@') { $url = "https://github.com/$body.git" }
+    # A 40-hex ref cannot be queried by name; prove reachability instead and let
+    # pnpm verify the SHA during install.
+    $refArg = if ($ref -ne '' -and $ref -notmatch '^[0-9a-f]{7,40}$') { $ref } else { 'HEAD' }
+
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $code = 1
+    try {
+      $probe = (& git ls-remote --exit-code $url $refArg 2>&1 | Out-String)
+      $code = $LASTEXITCODE
+    } finally {
+      $ErrorActionPreference = $previous
+    }
+    if ($code -ne 0 -or $probe.Trim() -eq '') {
+      throw "git spec does not resolve: '$Spec' (git ls-remote $url $refArg found nothing)"
+    }
+    Write-Host "        git spec resolves ($url @ $refArg)" -ForegroundColor DarkGray
+    if ($ref -match '^[0-9a-f]{7,40}$') {
+      Write-Host '        ref is a commit SHA — reachability proven here, the SHA itself is verified by the install' -ForegroundColor DarkGray
+    }
+    return
+  }
+
+  # local path / file: / link:
+  if ($Spec -like 'file:*' -or $Spec -like 'link:*' -or $Spec.StartsWith('.') -or $Spec.StartsWith('/') -or $Spec -match '^[A-Za-z]:') {
+    $path = $Spec -replace '^(file:|link:)', ''
+    if (-not (Test-Path (Join-Path $path 'package.json'))) { throw "local spec has no package.json: $path" }
+    Write-Host '        local spec has a package.json' -ForegroundColor DarkGray
+    return
+  }
+
+  # registry spec: name or name@range
+  $name = $Spec
+  $range = ''
+  if ($Spec.Contains('@')) {
+    $name = ($Spec -split '@')[0]
+    $range = ($Spec -split '@', 2)[1]
+  }
+  $target = if ($range -ne '') { "$name@$range" } else { $name }
+
+  $previous = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  $code = 1
+  $probe = ''
+  try {
+    $probe = (& npm --loglevel=error view $target version --registry $Registry 2>&1 | Out-String)
+    $code = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previous
+  }
+  if ($code -ne 0 -or $probe.Trim() -eq '') {
+    throw "'$target' does not resolve on $Registry — publish it first (scripts/publish-npm.ps1), or install a github: spec instead"
+  }
+  Write-Host "        registry spec resolves: $target -> $($probe.Trim())" -ForegroundColor DarkGray
+}
+
 # ── setup ────────────────────────────────────────────────────────────────────
 
 # Default the checkout path to this script's repository root.
@@ -128,6 +203,10 @@ Write-Host "  profile : $profileDir" -ForegroundColor DarkGray
 Write-Host "  spec    : $NewSpec" -ForegroundColor DarkGray
 Write-Host "  dsh     : $dsh" -ForegroundColor DarkGray
 Write-Host "  DryRun  : $($DryRun.IsPresent)" -ForegroundColor DarkGray
+
+Write-Host ''
+Write-Host 'preflight: does the target spec exist?' -ForegroundColor Cyan
+Assert-SpecResolves -Spec $NewSpec -Registry $Registry
 
 Write-Host ''
 Write-Host 'plan:' -ForegroundColor Cyan

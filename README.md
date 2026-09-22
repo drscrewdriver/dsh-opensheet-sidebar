@@ -216,9 +216,15 @@ pwsh -File scripts/publish-npm.ps1                        # 再发
 pwsh -File scripts/publish-npm.ps1 -DeprecateOld dsh-csv-sidebar   # 可选：给旧名打 deprecate
 
 # ② 消费侧：装新身份 → 摘旧身份 → 换 profile 补丁行 id → 逐项验证
-pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0' -DryRun
-pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0'
+#    -NewSpec 必须是「今天真的能解析到」的 spec —— 脚本会在改动任何东西之前先预检。
+#    本包目前只在 GitHub（npm 上尚不存在），所以用 github: 形态：
+pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'github:drscrewdriver/dsh-opensheet-sidebar#<sha>' -DryRun
+pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'github:drscrewdriver/dsh-opensheet-sidebar#<sha>'
+#    发布到 npm 之后再切成 registry 形态（在那之前这条会被预检挡下）：
+#    pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0'
 ```
+
+**预检（preflight）**：`-NewSpec` 先解析再动手 —— npm 形态走 `npm view <name>[@range]`，`github:` 形态走 `git ls-remote`（40 位 SHA 无法按名查询，故验证仓库可达性，SHA 本身交由安装步骤校验），本地形态查 `package.json`。解析不到就在备份之前中止，退出码 1 —— 免得一条"看起来能用"的样例跑到一半才失败。
 
 也可以走 npm script 别名：
 
