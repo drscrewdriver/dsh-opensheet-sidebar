@@ -78,7 +78,7 @@ v0.1.0 装进 profile 后 `cordis.patch.yml` 已登记、`node_modules` 也在�
 
 ```bash
 npm run build     # esbuild 双入口 + tsc 类型声明；构建期真加载一次 bundle 并断言 apply/inject
-npm test          # 12 项核心断言（解析 / 引用 / 分隔符 / 四维熔断 / 宿主截断 / 空文件）
+npm test          # 25 项断言：14 csv（解析/引用/分隔符/四维熔断/占位符完整性/警告去重）+ 11 xlsx（zip/XML/工作表/两道容器闸门）
 npm run verify    # build && test
 ```
 
@@ -105,6 +105,26 @@ dsh-opensheet-sidebar :: 12 checks passed, 0 failed
 构建期门禁（`scripts/build.mjs`）在写出产物后：用 `node:vm` + 桩 `window.__ModuleLoader__` 真跑一遍 bundle，断言 `load()` 被调用、`id` 等于包名、`factory()` 返回带 `apply` 与 `inject` 的对象；并拒绝任何 Node 内置模块请求。**加载不了的 bundle 在构建阶段就红灯，不会带病进宿主。**
 
 ---
+
+### 5.1 xlsx 夹具与自检（`demo/xlsx/`）
+
+夹具由脚本生成，不提交二进制：固定随机种子、字节稳定，且**每个文件只负责触发一条路径**。
+
+```bash
+python scripts/make-xlsx-fixtures.py --out ../demo/xlsx   # 需要 openpyxl（dev-only）
+node scripts/report-fixtures.mjs ../demo/xlsx             # 用插件自己的读取器跑一遍并打印所见
+```
+
+| 文件 | 体积 | 触发 |
+|------|------|------|
+| `basic-3sheets.xlsx` | 8 KB | 3 个工作表（其一隐藏）· 真实日期格式 · 布尔 · 列空洞 · 无缓存值的公式 |
+| `wide-150cols.xlsx` | 15 KB | 列上限（150 > 100）→ `cols` |
+| `long-12000rows.xlsx` | 286 KB | 行上限 + 预览预算 → `rows`（**单条**，含 found/kept/limit） |
+| `long-cell-20k.xlsx` | 5 KB | 单元格上限（20 000 > 10 240）→ `cell-length` |
+| `deep-sheet-60k.xlsx` | 1.7 MB | **归档小、解压 56.7 MB** → `sheet-bytes`（解压前就拒绝） |
+| `big-archive.xlsx` | 8.5 MB | 归档本身超 5 MB → `file-size`（BLOCKED） |
+
+`report-fixtures.mjs` 的输出就是「这套夹具各司其职」的证据；它跑在真实 Excel 写入器（openpyxl）产出的文件上，因此也覆盖了合成夹具覆盖不到的自定义日期格式路径（`2026-01-08` 而非序列号 `46030`）。
 
 ## 六、安装
 

@@ -195,5 +195,32 @@ check('every warning template interpolates completely (no literal {found})', () 
   }
 })
 
+// ── 12. One dimension, one warning line ─────────────────────────────────────
+// Regression gate: the row ceiling and the preview budget both used to warn, so
+// a >10k-row file rendered two near-identical "rows" lines in the banner.
+check('a tripped dimension warns exactly once', () => {
+  const many = ['h1,h2']
+  for (let i = 0; i < 500; i++) many.push(`${i},x`)
+
+  const hard = parseCsvText(many.join('\n'), { fileName: 'many.csv', fileSize: 10, config: { maxRows: 100, previewRows: 50 } })
+  const preview = parseCsvText(many.join('\n'), { fileName: 'prev.csv', fileSize: 10, config: { maxRows: 100_000, previewRows: 5 } })
+
+  for (const result of [hard, preview]) {
+    const rowsWarnings = result.warnings.filter(warning => warning.reason === 'rows')
+    assert.equal(rowsWarnings.length, 1, `expected exactly one rows warning, got ${rowsWarnings.length}`)
+    const reasons = result.warnings.map(warning => warning.reason)
+    assert.equal(new Set(reasons).size, reasons.length, `duplicate warning reasons: ${reasons.join(', ')}`)
+    // The single line must still carry everything the banner renders.
+    const [only] = rowsWarnings
+    assert.ok(only.detail.kept !== undefined, 'the rows warning lost `kept`')
+    assert.ok(only.detail.limit !== undefined, 'the rows warning lost `limit`')
+    assert.ok(only.detail.found !== undefined, 'the rows warning lost `found`')
+  }
+
+  // The two paths must still be distinguishable by what they counted.
+  assert.equal(hard.meta.totalRows, 101)
+  assert.equal(preview.meta.rowCount, 5)
+})
+
 rmSync(outDir, { recursive: true, force: true })
 console.log(`\ndsh-opensheet-sidebar :: ${checks} checks passed, 0 failed`)

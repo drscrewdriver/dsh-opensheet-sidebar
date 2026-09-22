@@ -75,6 +75,7 @@ export function createBreaker(config: Partial<CircuitBreakerConfig> = {}): Break
   let colCount = 0
   let cellWarned = false
   let previewExhausted = false
+  let rowsWarned = false
   const warnings: BreakerWarning[] = []
   const rows: string[][] = []
   let headers: string[] = []
@@ -112,8 +113,13 @@ export function createBreaker(config: Partial<CircuitBreakerConfig> = {}): Break
 
       if (rowCount > cfg.maxRows) {
         // The row ceiling: stop the reader here instead of after 10 000 more.
+        // Warn once — the preview budget below may already have warned, and
+        // `finalize` back-fills `found`, so a single line carries every fact.
         state = 'TRUNCATED'
-        warnings.push({ reason: 'rows', detail: { found: rowCount, limit: cfg.maxRows, kept: cfg.previewRows } })
+        if (!rowsWarned) {
+          rowsWarned = true
+          warnings.push({ reason: 'rows', detail: { kept: cfg.previewRows, limit: cfg.maxRows } })
+        }
         return false
       }
 
@@ -140,7 +146,10 @@ export function createBreaker(config: Partial<CircuitBreakerConfig> = {}): Break
         rows.push(cells)
       } else if (!previewExhausted) {
         previewExhausted = true
-        warnings.push({ reason: 'rows', detail: { kept: cfg.previewRows, limit: cfg.maxRows } })
+        if (!rowsWarned) {
+          rowsWarned = true
+          warnings.push({ reason: 'rows', detail: { kept: cfg.previewRows, limit: cfg.maxRows } })
+        }
         if (state !== 'BLOCKED') state = 'TRUNCATED'
       }
       return true
