@@ -1,5 +1,5 @@
 /**
- * Browser half of `dsh-csv-sidebar` — the Cordis client entry.
+ * Browser half of `dsh-opensheets-sidebar` — the Cordis client entry.
  *
  * This file is the whole integration contract, so it is worth stating plainly:
  *
@@ -39,19 +39,19 @@ import type { T } from './locales'
 import type { ClientContext, SessionScopeLike } from './seams'
 
 /** Tab type id — package-prefixed so it cannot collide with a built-in type. */
-export const TAB_ID = 'dsh-csv-sidebar:tab'
+export const TAB_ID = 'dsh-opensheets-sidebar:tab'
 
 /** File-viewer id, as it appears in the Side card's preview inventory. */
-export const VIEWER_ID = 'dsh-csv-sidebar:viewer'
+export const VIEWER_ID = 'dsh-opensheets-sidebar:viewer'
 
 /** Workbook viewer id — a separate registration because it needs a custom loader. */
-export const XLSX_VIEWER_ID = 'dsh-csv-sidebar:xlsx'
+export const XLSX_VIEWER_ID = 'dsh-opensheets-sidebar:xlsx'
 
 /** Services that must be published before `apply` runs. */
 export const inject = ['betterSidebar', 'locale'] as const
 
 /** Id of the injected <style> tag, so a re-apply can detect its own work. */
-const STYLE_ID = 'dsh-csv-sidebar-styles'
+const STYLE_ID = 'dsh-opensheets-sidebar-styles'
 
 /** Order in the `+` menu: after the built-ins (editor 10 … terminal 40, browser 50). */
 const TAB_ORDER = 70
@@ -96,11 +96,11 @@ function translatorOf(ctx: ClientContext): T {
 export function apply(rawCtx: unknown): void {
   const ctx = clientContextOf(rawCtx)
 
-  ctx.effect(injectStyles, 'dsh-csv-sidebar: stylesheet')
+  ctx.effect(injectStyles, 'dsh-opensheets-sidebar: stylesheet')
 
   if (ctx.locale !== undefined) {
     for (const [tag, dict] of Object.entries(dictionaries)) {
-      ctx.effect(() => ctx.locale!.register(NS, tag, dict), `dsh-csv-sidebar: dictionary ${tag}`)
+      ctx.effect(() => ctx.locale!.register(NS, tag, dict), `dsh-opensheets-sidebar: dictionary ${tag}`)
     }
   }
 
@@ -110,7 +110,7 @@ export function apply(rawCtx: unknown): void {
   if (bar === undefined) {
     // Loud, not fatal: the plugin stays loadable and simply contributes nothing.
     console.warn(
-      '[dsh-csv-sidebar] ctx.betterSidebar 未发布：dsh-better-sidebar 未安装或已禁用，CSV 预览保持惰性。',
+      '[dsh-opensheets-sidebar] ctx.betterSidebar 未发布：dsh-better-sidebar 未安装或已禁用，CSV 预览保持惰性。',
     )
     return
   }
@@ -134,7 +134,7 @@ export function apply(rawCtx: unknown): void {
             t,
           }),
       }),
-    'dsh-csv-sidebar: file viewer',
+    'dsh-opensheets-sidebar: file viewer',
   )
 
   // ── Workbook previewer: `.xlsx` / `.xlsm` open as a table with sheet tabs ──
@@ -165,7 +165,7 @@ export function apply(rawCtx: unknown): void {
             t,
           }),
       }),
-    'dsh-csv-sidebar: workbook viewer',
+    'dsh-opensheets-sidebar: workbook viewer',
   )
 
   // ── Manual tab: drop a local file, real byte size known up front ──────────
@@ -180,8 +180,8 @@ export function apply(rawCtx: unknown): void {
         single: true, // ≡ dedupeKey: () => id — reopening focuses the existing tab
         component: () => createElement(CsvLocalTab, { t }),
       }),
-    'dsh-csv-sidebar: tab',
+    'dsh-opensheets-sidebar: tab',
   )
 
-  console.log('[dsh-csv-sidebar] 已注册：CSV 预览器 (.csv/.tsv/.psv) + 工作簿预览器 (.xlsx/.xlsm) + 手动 tab')
+  console.log('[dsh-opensheets-sidebar] 已注册：CSV 预览器 (.csv/.tsv/.psv) + 工作簿预览器 (.xlsx/.xlsm) + 手动 tab')
 }

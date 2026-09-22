@@ -1,5 +1,5 @@
 /**
- * Build script for dsh-csv-sidebar.
+ * Build script for dsh-opensheets-sidebar.
  *
  * Two artifacts, two different contracts:
  *
@@ -167,8 +167,8 @@ if (!Array.isArray(exportsObject.inject) || exportsObject.inject.length === 0) {
 }
 
 const kb = path => (statSync(path).size / 1024).toFixed(1)
-console.log(`[dsh-csv-sidebar] lib/index.mjs  ${kb(out('index.mjs'))} KB`)
-console.log(`[dsh-csv-sidebar] lib/client.js  ${kb(clientPath)} KB  (id: ${registration.id})`)
+console.log(`[dsh-opensheets-sidebar] lib/index.mjs  ${kb(out('index.mjs'))} KB`)
+console.log(`[dsh-opensheets-sidebar] lib/client.js  ${kb(clientPath)} KB  (id: ${registration.id})`)
 console.log(
-  `[dsh-csv-sidebar] build OK — load-tested: factory exports apply() + inject ${JSON.stringify(exportsObject.inject)}`,
+  `[dsh-opensheets-sidebar] build OK — load-tested: factory exports apply() + inject ${JSON.stringify(exportsObject.inject)}`,
 )

@@ -8,7 +8,7 @@
  * a blank, so a translation gap is visible instead of silent.
  */
 /** Namespace for every key below. */
-export declare const NS = "dsh-csv-sidebar";
+export declare const NS = "dsh-opensheets-sidebar";
 /** The two built-in languages this plugin ships. */
 export declare const dictionaries: Record<string, Record<string, string>>;
 /** Values substituted into a `{placeholder}` template. */

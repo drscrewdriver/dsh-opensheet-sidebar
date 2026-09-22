@@ -1,7 +1,7 @@
 {
-  "id": "dsh-external/dsh-csv-sidebar",
-  "name": "dsh-csv-sidebar",
-  "version": "0.3.0",
+  "id": "dsh-external/dsh-opensheets-sidebar",
+  "name": "dsh-opensheets-sidebar",
+  "version": "1.0.0",
   "description": {
     "en": "CSV/TSV/PSV structured preview plus xlsx/xlsm workbooks with sheet tabs in the right sidebar (dsh-better-sidebar consumer), guarded by a circuit breaker with two zip-container gates.",
     "zh": "右侧栏 CSV/TSV/PSV 结构化预览，并支持 xlsx/xlsm 工作簿与工作表切换（dsh-better-sidebar 消费者），带四维规模熔断与两道 zip 容器闸门。"

@@ -9,12 +9,12 @@
  */
 
 /** Namespace for every key below. */
-export const NS = 'dsh-csv-sidebar'
+export const NS = 'dsh-opensheets-sidebar'
 
 /** The two built-in languages this plugin ships. */
 export const dictionaries: Record<string, Record<string, string>> = {
   en: {
-    'tab.title': 'CSV',
+    'tab.title': 'Sheets',
     'tab.desc': 'Open a CSV/TSV/PSV or xlsx file from disk and inspect it as a table',
     'viewer.title': 'CSV table',
     'viewer.xlsx.title': 'Spreadsheet table',
@@ -64,7 +64,7 @@ export const dictionaries: Record<string, Record<string, string>> = {
     'table.column': 'column {n}',
   },
   zh: {
-    'tab.title': 'CSV',
+    'tab.title': '表格',
     'tab.desc': '打开磁盘上的 CSV/TSV/PSV 或 xlsx 文件，以表格形式查看',
     'viewer.title': 'CSV 表格',
     'viewer.xlsx.title': '表格 (xlsx)',

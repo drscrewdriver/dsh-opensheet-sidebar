@@ -1,5 +1,5 @@
 /**
- * Node half of `dsh-csv-sidebar`.
+ * Node half of `dsh-opensheets-sidebar`.
  *
  * The Cordis loader needs one entry point per profile row. This plugin's
  * behaviour lives entirely in the browser half — the file viewer and the tab
@@ -10,7 +10,7 @@
  */
 
 /** Profile row identity; must match `cordis.patch.yml` and `package.json#name`. */
-export const name = 'dsh-csv-sidebar'
+export const name = 'dsh-opensheets-sidebar'
 
 /**
  * Host-side apply. Intentionally empty — see the module docblock.
