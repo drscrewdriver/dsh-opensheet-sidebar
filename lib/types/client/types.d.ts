@@ -20,13 +20,21 @@ export interface CsvMeta {
     visibleCols: number;
     /** Delimiter the sniffer settled on. */
     delimiter: string;
+    /** Worksheet name, when the payload came from a workbook rather than text. */
+    sheetName?: string;
     /** True when the host's own read was already truncated before we saw it. */
     sourceTruncated: boolean;
 }
 /** Circuit-breaker state machine. */
 export type BreakerState = 'IDLE' | 'READING' | 'PARSING' | 'OK' | 'TRUNCATED' | 'BLOCKED';
 /** Why the breaker tripped; one entry per dimension that fired. */
-export type BreakerReason = 'file-size' | 'rows' | 'cols' | 'cell-length' | 'source-truncated' | 'parse-error';
+export type BreakerReason = 'file-size' | 'rows' | 'cols' | 'cell-length' | 'source-truncated' | 'parse-error'
+/** A zip container (xlsx) inflated past the total byte budget — a zip bomb. */
+ | 'inflated-bytes'
+/** One worksheet's inflated XML alone exceeded its own ceiling. */
+ | 'sheet-bytes'
+/** The container could not be read at all (not a zip, missing part, corrupt). */
+ | 'container-error';
 /** One tripped dimension. */
 export interface BreakerWarning {
     reason: BreakerReason;
@@ -41,7 +49,7 @@ export interface BreakerResult {
     rows: string[][];
     warnings: BreakerWarning[];
 }
-/** Tunable thresholds. All four dimensions plus the preview ceilings. */
+/** Tunable thresholds. The CSV dimensions plus the workbook ones. */
 export interface CircuitBreakerConfig {
     /** Hard ceiling on file size in bytes (local files) — over it: BLOCKED. */
     maxFileSize: number;
@@ -53,6 +61,33 @@ export interface CircuitBreakerConfig {
     maxCellLength: number;
     /** How many rows the table keeps once truncated. */
     previewRows: number;
+    /**
+     * Total bytes a zip container (xlsx) may inflate to across every entry we
+     * read. This is the dimension a spreadsheet actually needs: the archive is
+     * small by construction, so a size check on the file itself defends nothing
+     * against a zip bomb.
+     */
+    maxInflatedBytes: number;
+    /** Ceiling on a single worksheet's inflated XML — one legal sheet, bounded. */
+    maxSheetBytes: number;
+}
+/** One worksheet of a workbook, in document order. */
+export interface SheetInfo {
+    /** Display name from `xl/workbook.xml`. */
+    name: string;
+    /** Zip path of the worksheet part (e.g. `xl/worksheets/sheet1.xml`). */
+    path: string;
+    /** `state="hidden"` / `"veryHidden"` sheets are listed but not auto-opened. */
+    hidden: boolean;
+}
+/** A parsed workbook: the sheet list plus whichever sheet was materialised. */
+export interface WorkbookResult {
+    /** Every sheet, in workbook order. */
+    sheets: SheetInfo[];
+    /** Name of the sheet the result below holds. */
+    activeSheet: string;
+    /** The active sheet as a normal breaker result, so the table renders it. */
+    sheet: BreakerResult;
 }
 /** Sort state of the data table. */
 export interface SortState {

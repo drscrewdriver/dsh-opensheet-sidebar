@@ -147,6 +147,7 @@ dsh --profile <profile> --dump-config | Select-String dsh-csv-sidebar
 
 | 插件版本 | DSH | 说明 |
 |---------|-----|------|
+| 0.3.0 | `>=0.1.5-rc.1 <0.2.0-0` | 增加 xlsx/xlsm 工作簿预览（工作表切换）+ 两道 zip 容器闸门 + 占位符完整性门禁 |
 | 0.2.0 | `>=0.1.5-rc.1 <0.2.0-0` | 标准格式重写：`__ModuleLoader__` + `apply/inject/effect` + better-sidebar 双接缝 |
 | 0.1.0 | — | 集成方式不合契约，**不会加载**，已废弃 |
 
@@ -155,3 +156,47 @@ dsh --profile <profile> --dump-config | Select-String dsh-csv-sidebar
 - 表格不做虚拟滚动：DOM 预算由 `previewRows` 硬控，规模再大也只是「更早截断」，不会变慢。
 - 宿主 `fsRead` 会自行截断大文件，此时统计栏显示 `≈` 与「宿主已截断读取」标签，`state = TRUNCATED`——**不谎报为完整文件**。
 - 仅预览，不写回：不提供编辑与保存。
+
+## 九、xlsx 支持（含工作表切换）
+
+`.xlsx` / `.xlsm` 以同一套表格渲染打开，顶部一排 **sheet 标签**可切换；隐藏表（`state="hidden"`）在标签上弱化，默认自动打开第一个可见表。零运行时依赖。
+
+### 9.1 接缝：为什么必须换一套读取路径
+
+工作簿是二进制，而 `fetchStrategy: 'fsRead'` 对二进制只回 `{kind:'binary', size, truncated, head}` —— **没有 content**，喂不了解析器。所以 xlsx 是**独立注册**的预览器：
+
+```
+fetchStrategy: 'custom'
+load: fetch(`/sidebar/file?sessionId=..&cwd=..&path=..`) → arrayBuffer → Uint8Array
+```
+
+走宿主自己的原始字节路由，工作区路径围栏因此仍在宿主侧（我们不自己读文件）。CSV 那条 `fsRead` 路径保持不动。
+
+### 9.2 解析管线（`src/client/xlsx.ts`）
+
+```
+zip 中央目录 → xl/workbook.xml（表清单 / 顺序 / 隐藏）
+             → xl/_rels/workbook.xml.rels（rId → part）
+             → xl/sharedStrings.xml（富文本 run 拼接）
+             → xl/styles.xml（cellXfs → numFmtId → 是否日期）
+             → xl/worksheets/sheetN.xml（点哪个表解哪个）
+```
+
+单元格覆盖：共享字符串 / 内联字符串 / 公式缓存值（`t="str"`）/ 布尔 / 错误值 / 数字；按 `r="C3"` **还原列空洞**（缺失的列不会把后一列左移）；日期序列号按 1900 与 1904 两种纪元转成可读日期。
+
+解压用浏览器原生 `DecompressionStream('deflate-raw')`；XML 用针对性扫描——xlsx 的 XML 是机器生成的规整结构，上下通用解析器是浪费。
+
+### 9.3 两道容器闸门（对 zip 来说，大小闸门等于没防护）
+
+| 闸门 | 时机 | 默认 | 作用 |
+|------|------|------|------|
+| **声明的解压体积** | 任何解压动作**之前**，读中央目录 | 单 part 32 MB | zip 头可伪造，所以这是确定性前置拒绝 |
+| **流式字节预算** | 解压过程中累计 | 总计 64 MB | 头部撒谎时的兜底；越界立刻 `cancel()` |
+
+一个工作表单独超限**只挡这个表**，兄弟表照常打开。容器本身不可读（非 zip / 缺 part）→ `container-error`，渲染成一张可读的错误卡，而不是抛异常。
+
+### 9.4 尚未支持
+
+`.xls`（Excel 97-2003 BIFF8）与 WPS 旧格式 `.et` / `.wps` / `.dps`：都是 OLE2 复合文档，零依赖需要自建 CFB(FAT/directory) + BIFF 解析，成本高且易错。要覆盖通常就得引 SheetJS（~1 MB，且 npm 上版本停更、新版只在官方 CDN 发），与零依赖准则冲突 —— 需要时单独评估。
+
+> 注意区分：**WPS 表格默认保存的 `.xlsx` 就是标准 xlsx**，本插件直接支持；只有「另存为 WPS 旧格式」产出的 `.et` 才在未支持之列。

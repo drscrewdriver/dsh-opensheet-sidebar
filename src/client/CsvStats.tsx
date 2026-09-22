@@ -46,9 +46,16 @@ export function CsvStats({ result, t }: CsvStatsProps) {
         <span className="csv-stats__item">
           {meta.colCount} {t('stats.cols')}
         </span>
-        <span className="csv-stats__item csv-stats__tag" title={t('stats.delimiter')}>
-          {delimiterLabel(meta.delimiter, t)}
-        </span>
+        {/* A workbook has sheets, not delimiters — show which one this is. */}
+        {meta.sheetName !== undefined ? (
+          <span className="csv-stats__item csv-stats__tag" title={t('stats.sheet')}>
+            {meta.sheetName}
+          </span>
+        ) : (
+          <span className="csv-stats__item csv-stats__tag" title={t('stats.delimiter')}>
+            {delimiterLabel(meta.delimiter, t)}
+          </span>
+        )}
         {meta.sourceTruncated && (
           <span className="csv-stats__item csv-stats__tag">{t('stats.truncatedSource')}</span>
         )}

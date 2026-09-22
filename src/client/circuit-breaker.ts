@@ -26,13 +26,17 @@ import type {
   CsvMeta,
 } from './types'
 
-/** Thresholds. The four ceilings plus the preview row budget. */
+/** Thresholds: the four text dimensions, the preview budget, and the two workbook gates. */
 export const DEFAULT_CONFIG: CircuitBreakerConfig = {
   maxFileSize: 5 * 1024 * 1024, // 5 MB
   maxRows: 10_000,
   maxCols: 100,
   maxCellLength: 10_240, // 10 KB
   previewRows: 200,
+  // A workbook is a zip: these two are what actually defend the tab, because a
+  // small archive can inflate to hundreds of megabytes.
+  maxInflatedBytes: 64 * 1024 * 1024,
+  maxSheetBytes: 32 * 1024 * 1024,
 }
 
 /** Elided-cell marker budget: keep the head of an oversized cell readable. */
@@ -155,6 +159,12 @@ export function createBreaker(config: Partial<CircuitBreakerConfig> = {}): Break
     finalize() {
       if (state !== 'BLOCKED' && state !== 'TRUNCATED') {
         state = warnings.length > 0 ? 'TRUNCATED' : 'OK'
+      }
+      // The preview-budget path trips before the row ceiling is known, so its
+      // warning carries no `found`. Back-fill it with the rows actually counted
+      // — otherwise the rendered line keeps a literal `{found}`.
+      for (const warning of warnings) {
+        if (warning.reason === 'rows') warning.detail = { ...warning.detail, found: rowCount }
       }
       meta.rowCount = rows.length
       meta.totalRows = rowCount

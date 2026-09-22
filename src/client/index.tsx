@@ -31,17 +31,21 @@ import { createElement } from 'react'
 import { CsvFileViewer } from './CsvFileViewer'
 import { CsvIcon } from './CsvIcon'
 import { CsvLocalTab } from './CsvLocalTab'
+import { XlsxFileViewer } from './XlsxFileViewer'
 import { NS, dictionaries, interpolate, translatorFrom } from './locales'
-import { clientContextOf } from './seams'
+import { clientContextOf, sidebarFileUrl } from './seams'
 import css from './styles.css'
 import type { T } from './locales'
-import type { ClientContext } from './seams'
+import type { ClientContext, SessionScopeLike } from './seams'
 
 /** Tab type id — package-prefixed so it cannot collide with a built-in type. */
 export const TAB_ID = 'dsh-csv-sidebar:tab'
 
 /** File-viewer id, as it appears in the Side card's preview inventory. */
 export const VIEWER_ID = 'dsh-csv-sidebar:viewer'
+
+/** Workbook viewer id — a separate registration because it needs a custom loader. */
+export const XLSX_VIEWER_ID = 'dsh-csv-sidebar:xlsx'
 
 /** Services that must be published before `apply` runs. */
 export const inject = ['betterSidebar', 'locale'] as const
@@ -133,6 +137,37 @@ export function apply(rawCtx: unknown): void {
     'dsh-csv-sidebar: file viewer',
   )
 
+  // ── Workbook previewer: `.xlsx` / `.xlsm` open as a table with sheet tabs ──
+  //
+  // A workbook is binary, and `fsRead` answers a binary file with a head-only
+  // result — so this registration uses a `custom` loader instead and pulls raw
+  // bytes off better-sidebar's own `/sidebar/file` route, which keeps the
+  // workspace path fence on the host side.
+  ctx.effect(
+    () =>
+      bar.registerFileViewer({
+        id: XLSX_VIEWER_ID,
+        title: () => t('viewer.xlsx.title'),
+        icon: (size: number) => CsvIcon(size),
+        exts: ['xlsx', 'xlsm'],
+        priority: 50,
+        fetchStrategy: 'custom',
+        load: async (path: string, scope: SessionScopeLike, signal?: AbortSignal) => {
+          const response = await fetch(sidebarFileUrl(scope, path), { signal })
+          if (!response.ok) throw new Error(`HTTP ${response.status} while reading ${path}`)
+          return new Uint8Array(await response.arrayBuffer())
+        },
+        component: props =>
+          createElement(XlsxFileViewer, {
+            path: props.path,
+            title: props.title,
+            customData: props.customData,
+            t,
+          }),
+      }),
+    'dsh-csv-sidebar: workbook viewer',
+  )
+
   // ── Manual tab: drop a local file, real byte size known up front ──────────
   ctx.effect(
     () =>
@@ -148,5 +183,5 @@ export function apply(rawCtx: unknown): void {
     'dsh-csv-sidebar: tab',
   )
 
-  console.log('[dsh-csv-sidebar] 已注册：文件预览器 (.csv/.tsv/.psv) + 手动 tab')
+  console.log('[dsh-csv-sidebar] 已注册：CSV 预览器 (.csv/.tsv/.psv) + 工作簿预览器 (.xlsx/.xlsm) + 手动 tab')
 }

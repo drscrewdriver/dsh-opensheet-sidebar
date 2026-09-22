@@ -1,7 +1,7 @@
 {
   "name": "dsh-csv-sidebar",
-  "version": "0.2.0",
-  "description": "DSH web plugin (dsh-better-sidebar consumer): render CSV/TSV/PSV files as a structured, sortable, filterable table in the right sidebar, with a four-dimension circuit breaker so an oversized file can never freeze the browser.",
+  "version": "0.3.0",
+  "description": "DSH web plugin (dsh-better-sidebar consumer): render CSV/TSV/PSV files and xlsx/xlsm workbooks as a structured, sortable, filterable table in the right sidebar — with sheet tabs and a circuit breaker (rows/cols/cells plus the two zip-container gates) so no input can freeze the browser.",
   "type": "module",
   "main": "lib/index.mjs",
   "types": "lib/types/index.d.ts",
@@ -76,7 +76,7 @@
     "build:bundle": "node scripts/build.mjs",
     "build:types": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node tests/csv-core.test.mjs",
+    "test": "node tests/csv-core.test.mjs && node tests/xlsx.test.mjs",
     "verify": "npm run build && npm test",
     "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
     "prepublishOnly": "npm run verify"

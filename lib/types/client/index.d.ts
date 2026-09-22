@@ -2,6 +2,8 @@
 export declare const TAB_ID = "dsh-csv-sidebar:tab";
 /** File-viewer id, as it appears in the Side card's preview inventory. */
 export declare const VIEWER_ID = "dsh-csv-sidebar:viewer";
+/** Workbook viewer id — a separate registration because it needs a custom loader. */
+export declare const XLSX_VIEWER_ID = "dsh-csv-sidebar:xlsx";
 /** Services that must be published before `apply` runs. */
 export declare const inject: readonly ["betterSidebar", "locale"];
 /**

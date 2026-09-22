@@ -308,6 +308,46 @@
   color: var(--dsw-alias-label-tertiary, #888);
 }
 
+/* ── Workbook sheet tabs ─────────────────────────────────────────────────── */
+
+.csv-sheets {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--dsw-alias-border-l1, #2a2a2a);
+}
+
+.csv-sheet {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  background: none;
+  color: var(--dsw-alias-label-secondary, #aaa);
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.csv-sheet:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(255, 255, 255, 0.06));
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+}
+
+.csv-sheet--active {
+  border-bottom-color: var(--dsw-alias-brand-primary, #60a5fa);
+  color: var(--dsw-alias-label-primary, #e6e6e6);
+  font-weight: 600;
+}
+
+.csv-sheet--hidden {
+  opacity: 0.55;
+  font-style: italic;
+}
+
 .csv-empty__title,
 .csv-error__title {
   font-size: 13px;

@@ -50,6 +50,8 @@ export interface FileViewerPropsLike {
   content?: string
   /** The host capped the file it returned. */
   truncated?: boolean
+  /** The registered loader's return value, when `fetchStrategy` is `custom`. */
+  customData?: unknown
 }
 
 /** How the host loads a file's bytes for one viewer. */
@@ -63,6 +65,12 @@ export interface FileViewerDescriptorLike {
   exts: readonly string[]
   priority?: number
   fetchStrategy: FileFetchStrategy
+  /**
+   * `fetchStrategy='custom'` loader. The host calls it with the path and the
+   * session scope and hands the return value to the component as `customData`;
+   * `signal` aborts on viewer teardown or re-match.
+   */
+  load?: (path: string, scope: SessionScopeLike, signal?: AbortSignal) => Promise<unknown>
   component: (props: FileViewerPropsLike) => ReactNode
 }
 
@@ -111,4 +119,19 @@ export function clientContextOf(raw: unknown): ClientContext {
     ...(isBetterSidebar(ctx.betterSidebar) ? { betterSidebar: ctx.betterSidebar } : {}),
     ...(isLocale(ctx.locale) ? { locale: ctx.locale } : {}),
   }
+}
+
+/**
+ * Absolute URL of better-sidebar's raw-bytes route for one path.
+ *
+ * Mirrored from the sidebar's own `mediaUrl` (`src/client/api.ts`). A workbook
+ * is binary and `fsRead` answers a binary file with a head-only result, so the
+ * xlsx viewer declares `fetchStrategy: 'custom'` and pulls bytes from here.
+ * Going through this route rather than reading the file ourselves is what
+ * keeps the workspace-root path fence on the host side.
+ */
+export function sidebarFileUrl(scope: SessionScopeLike, path: string): string {
+  const params = new URLSearchParams({ sessionId: scope.sessionId, path })
+  if (scope.cwd !== undefined && scope.cwd !== '') params.set('cwd', scope.cwd)
+  return `/sidebar/file?${params.toString()}`
 }

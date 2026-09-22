@@ -17,12 +17,12 @@ import assert from 'node:assert/strict'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const outDir = mkdtempSync(join(tmpdir(), 'dsh-csv-test-'))
-const bundlePath = join(outDir, 'core.mjs')
 
 await build({
   absWorkingDir: root,
-  entryPoints: ['src/client/csv.ts'],
-  outfile: bundlePath,
+  entryPoints: ['src/client/csv.ts', 'src/client/locales.ts'],
+  outdir: outDir,
+  outExtension: { '.js': '.mjs' },
   bundle: true,
   format: 'esm',
   platform: 'node',
@@ -30,7 +30,10 @@ await build({
   logLevel: 'warning',
 })
 
-const { parseCsvText, sniffDelimiter, scanRows, readCsvFile } = await import(pathToFileURL(bundlePath).href)
+const { parseCsvText, sniffDelimiter, scanRows, readCsvFile } = await import(
+  pathToFileURL(join(outDir, 'csv.mjs')).href
+)
+const { dictionaries, interpolate } = await import(pathToFileURL(join(outDir, 'locales.mjs')).href)
 
 /** Tiny assertion counter so the run prints measured numbers, not a claim. */
 let checks = 0
@@ -149,6 +152,47 @@ check('an empty document is OK with zero rows (never a throw)', () => {
   assert.equal(result.state, 'OK')
   assert.equal(result.headers.length, 0)
   assert.equal(result.rows.length, 0)
+})
+
+// ── 11. Every emitted warning must render with no leftover placeholder ──────
+// Regression gate: the preview-budget path used to trip before `found` was
+// known, so the banner literally read "共至少 {found} 行".
+check('every warning template interpolates completely (no literal {found})', () => {
+  const many = ['h1,h2']
+  for (let i = 0; i < 500; i++) many.push(`${i},x`)
+  const wide = `${Array.from({ length: 12 }, (_, i) => `c${i}`).join(',')}\n${Array.from({ length: 12 }, (_, i) => i).join(',')}\n`
+
+  const cases = [
+    // dimension 1 — file size
+    parseCsvText('a,b\n1,2\n', { fileName: 'big.csv', fileSize: 900 * 1024 * 1024 }),
+    // dimension 2 — the hard row ceiling
+    parseCsvText(many.join('\n'), { fileName: 'many.csv', fileSize: 10, config: { maxRows: 100, previewRows: 50 } }),
+    // dimension 2 — the preview budget, which trips *before* the ceiling exists
+    parseCsvText(many.join('\n'), { fileName: 'prev.csv', fileSize: 10, config: { maxRows: 100_000, previewRows: 5 } }),
+    // dimension 3 — columns
+    parseCsvText(wide, { fileName: 'wide.csv', fileSize: 10, config: { maxCols: 5 } }),
+    // dimension 4 — one cell
+    parseCsvText(`h\n${'x'.repeat(5000)}\n`, { fileName: 'cell.csv', fileSize: 10, config: { maxCellLength: 100 } }),
+    // the host capped its own read
+    parseCsvText('a,b\n1,2\n', { fileName: 'capped.csv', fileSize: 8, truncated: true }),
+  ]
+
+  const seen = new Set()
+  for (const result of cases) {
+    for (const warning of result.warnings) {
+      seen.add(warning.reason)
+      for (const [lang, dict] of Object.entries(dictionaries)) {
+        const template = dict[`warning.${warning.reason}`]
+        assert.ok(template !== undefined, `${lang} has no template for warning.${warning.reason}`)
+        const rendered = interpolate(template, warning.detail)
+        assert.ok(!rendered.includes('{'), `${lang} ${warning.reason} left a placeholder: ${rendered}`)
+      }
+    }
+  }
+
+  for (const required of ['file-size', 'rows', 'cols', 'cell-length', 'source-truncated']) {
+    assert.ok(seen.has(required), `no warning of reason ${required} was produced`)
+  }
 })
 
 rmSync(outDir, { recursive: true, force: true })

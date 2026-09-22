@@ -18,7 +18,7 @@
  * Pure module: no DOM, no React, no imports beyond local types.
  */
 import type { BreakerReason, BreakerResult, BreakerState, BreakerWarning, CircuitBreakerConfig, CsvMeta } from './types';
-/** Thresholds. The four ceilings plus the preview row budget. */
+/** Thresholds: the four text dimensions, the preview budget, and the two workbook gates. */
 export declare const DEFAULT_CONFIG: CircuitBreakerConfig;
 /** Human-readable byte size. */
 export declare function formatFileSize(bytes: number): string;

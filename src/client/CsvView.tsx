@@ -12,13 +12,16 @@ import type { BreakerResult } from './types'
 interface CsvViewProps {
   result: BreakerResult
   t: T
+  /** Optional strip above the warning banner (the workbook's sheet tabs). */
+  header?: ReactNode
   /** Optional footer controls (the tab's "open another file"). */
   actions?: ReactNode
 }
 
-export function CsvView({ result, t, actions }: CsvViewProps) {
+export function CsvView({ result, t, header, actions }: CsvViewProps) {
   return (
     <div className="csv-root">
+      {header}
       <CsvWarning result={result} t={t} />
       <CsvStats result={result} t={t} />
       <CsvTable result={result} t={t} />
