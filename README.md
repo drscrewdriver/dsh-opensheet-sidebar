@@ -204,3 +204,41 @@ zip 中央目录 → xl/workbook.xml（表清单 / 顺序 / 隐藏）
 `.xls`（Excel 97-2003 BIFF8）与 WPS 旧格式 `.et` / `.wps` / `.dps`：都是 OLE2 复合文档，零依赖需要自建 CFB(FAT/directory) + BIFF 解析，成本高且易错。要覆盖通常就得引 SheetJS（~1 MB，且 npm 上版本停更、新版只在官方 CDN 发），与零依赖准则冲突 —— 需要时单独评估。
 
 > 注意区分：**WPS 表格默认保存的 `.xlsx` 就是标准 xlsx**，本插件直接支持；只有「另存为 WPS 旧格式」产出的 `.et` 才在未支持之列。
+
+## 十、发布与身份迁移（脚本样例）
+
+两个脚本各管一半：**发布**在开发机，**迁移**在装插件的 profile。都支持 `-DryRun`（唯一可反复运行的模式），都是遇到第一个失败就停、绝不「照发不误」。
+
+```powershell
+# ① 发布侧：构建 + 测试 + 身份门禁 + 打包清单，然后才真发（--access public，官方 registry）
+pwsh -File scripts/publish-npm.ps1 -DryRun                # 先看
+pwsh -File scripts/publish-npm.ps1                        # 再发
+pwsh -File scripts/publish-npm.ps1 -DeprecateOld dsh-csv-sidebar   # 可选：给旧名打 deprecate
+
+# ② 消费侧：装新身份 → 摘旧身份 → 换 profile 补丁行 id → 逐项验证
+pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0' -DryRun
+pwsh -File scripts/migrate-profile.ps1 -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0'
+```
+
+也可以走 npm script 别名：
+
+```powershell
+npm run publish:npm -- -DryRun
+npm run profile:migrate -- -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0' -DryRun
+```
+
+### 10.1 为什么顺序是「先装新、再摘旧」
+
+改名要同时改四处，而**漏任何一处都是静默失败**（不是报错）：profile 依赖 spec、`dsh.profile.bundles`（由 CLI 的 reconcile 维护，不手工改）、profile `cordis.patch.yml` 的 row id（针对不存在 id 的补丁是空操作）、`node_modules` 里的目录。
+
+先装新的、再摘旧的，任何一步失败都留下一个**还能用的插件**，而不是一个空 profile。两次 pnpm 调用都会自动重试一次 —— 宿主在跑时 `node_modules` 被占用，首次可能抛 `ERR_PNPM_PACKAGE_MANAGER_REMOVE_MODULES_DIR`。
+
+### 10.2 脚本里的三个 PowerShell 5.1 坑（复用时可省半小时）
+
+| 坑 | 现象 | 写法 |
+|----|------|------|
+| 原生命令 + `2>` 重定向 + `$ErrorActionPreference='Stop'` | npm 的 stderr 警告被提升为**终止错误**，脚本在第 2 步莫名死掉 | 调用前临时放宽为 `Continue`，`2>&1 \| Out-String` 合并流，再读 `$LASTEXITCODE` |
+| `param()` 默认值里的 `$PSScriptRoot` | 求值时还是空串 → `Split-Path` 参数校验失败 | 默认写成 `''`，在脚本体里解析 |
+| `Where-Object` 结果的 `.Count` | 命中 1 条是 string（无 `.Count`）、0 条是 `$null`，`Set-StrictMode` 下直接报 `PropertyNotFound` | 一律套 `@(...)` 再取 `.Count` |
+
+发布脚本另外带两道**上传前后都该有的门禁**：名字必须「空闲或属于自己」（`npm view` + `maintainers` 对比 `npm whoami`，防止改到一个别人占用的名字上），以及没有登录会话时直接拒绝（而不是等一个 401）。

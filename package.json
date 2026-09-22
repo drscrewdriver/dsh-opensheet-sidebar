@@ -54,6 +54,11 @@
     "circuit-breaker"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "tag": "latest"
+  },
   "engines": {
     "node": ">=20",
     "dsh": ">=0.1.5-rc.1 <0.2.0-0"
@@ -82,6 +87,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "node tests/csv-core.test.mjs && node tests/xlsx.test.mjs",
     "verify": "npm run build && npm test",
+    "publish:npm": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-npm.ps1",
+    "profile:migrate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/migrate-profile.ps1",
     "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
     "prepublishOnly": "npm run verify"
   },
