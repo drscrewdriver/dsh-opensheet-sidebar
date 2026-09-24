@@ -4,6 +4,8 @@
 
 熔断去重：一个维度被触发时只出一条警告。1.0.0 的重复告警是行数上限与预览预算各推了一条 `rows` 警告造成的。
 
+> **发布记录（2026-09-25）**：npm `dsh-opensheet-sidebar@1.0.1`，dist-tags `latest` + `dsh-0.1.5`；49 files / 98.8 kB，tarball shasum `1862528750612980122ffc3d31f31eb05eb1bf7d`。
+
 ### Fixed
 
 - **同一维度不再重复告警**：行数上限与预览预算现在共用一个标志位，`finalize()` 回填 `found`，于是单行同时携带 kept/limit/found，而不是渲染两条近乎相同的横幅。新增断言：**每个原因恰好一条警告**。
