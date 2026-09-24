@@ -1,6 +1,6 @@
 {
   "name": "dsh-opensheet-sidebar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DSH web plugin (dsh-better-sidebar consumer): render CSV/TSV/PSV files and xlsx/xlsm workbooks as a structured, sortable, filterable table in the right sidebar — with sheet tabs and a circuit breaker (rows/cols/cells plus the two zip-container gates) so no input can freeze the browser.",
   "type": "module",
   "main": "lib/index.mjs",
@@ -54,6 +54,10 @@
     "circuit-breaker"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drscrewdriver/dsh-opensheet-sidebar.git"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public",

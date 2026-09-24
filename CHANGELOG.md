@@ -1,5 +1,22 @@
 # Changelog — dsh-opensheet-sidebar
 
+## 1.0.1 — 2026-09-25
+
+熔断去重：一个维度被触发时只出一条警告。1.0.0 的重复告警是行数上限与预览预算各推了一条 `rows` 警告造成的。
+
+### Fixed
+
+- **同一维度不再重复告警**：行数上限与预览预算现在共用一个标志位，`finalize()` 回填 `found`，于是单行同时携带 kept/limit/found，而不是渲染两条近乎相同的横幅。新增断言：**每个原因恰好一条警告**。
+- **宣布 `repository` 字段**，指向 `drscrewdriver/dsh-opensheet-sidebar`。收录列表只在已发布包指回仓库时才把 npm 包与仓库关联；1.0.0 缺这个字段，因此两者此前没有关联。
+
+### Added
+
+- **真实 xlsx 夹具集**（`scripts/make-xlsx-fixtures.py`，固定随机种子）：openpyxl 产出六个真实工作簿，每个只触发一条熔断路径；`scripts/report-fixtures.mjs` 用**插件自己的读取器**跑一遍并打印所读结果。正是它暴露了这条重复告警，也覆盖了合成 zip 夹具无法覆盖的自定义日期格式路径（真实 openpyxl 输出 → 2026-01-08）。
+
+### Tests
+
+- 25 项断言（14 csv + 11 xlsx），退出码 0；夹具报告显示每个文件恰好一条警告。
+
 ## 1.0.0 — 2026-09-22
 
 **包身份改名：`dsh-csv-sidebar` → `dsh-opensheet-sidebar`。** 功能与 0.3.0 完全相同，不改行为，只换身份与显示名。
