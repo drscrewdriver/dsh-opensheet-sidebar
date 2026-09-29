@@ -171,8 +171,8 @@ dsh --profile <profile> --dump-config | Select-String dsh-opensheet-sidebar
 
 | 插件版本 | DSH | 说明 |
 |---------|-----|------|
-| 2.0.0 | `>=0.2.0-rc.1 <0.2.1-0` | 0.2.0 宿主线（`compat/0.2.0` 分支）。纯元数据适配：消费面全部是 `ctx.get(...)` 纯 caller，0.2.0-rc.1 对 0.1.7 插件 API 完全兼容；顺带拉齐 manifest 漂移的 version |
-| 1.0.0 / 1.0.1 | `>=0.1.5-rc.1 <0.2.0-0` | 包身份改名（csv → opensheet）+ 熔断去重；由 `main` 服务 |
+| 2.0.0 | `>=0.2.0-rc.1 <0.2.1-0` | 0.2.0 宿主线（`main`，自 `compat/0.2.0` 升格）。纯元数据适配：消费面全部是 `ctx.get(...)` 纯 caller，0.2.0-rc.1 对 0.1.7 插件 API 完全兼容；顺带拉齐 manifest 漂移的 version |
+| 1.0.0 / 1.0.1 | `>=0.1.5-rc.1 <0.2.0-0` | 包身份改名（csv → opensheet）+ 熔断去重；由冻结分支 `compat/0.1.7` / `compat/0.1.5` 服务 |
 | 0.3.0 | `>=0.1.5-rc.1 <0.2.0-0` | 增加 xlsx/xlsm 工作簿预览（工作表切换）+ 两道 zip 容器闸门 + 占位符完整性门禁 |
 | 0.2.0 | `>=0.1.5-rc.1 <0.2.0-0` | 标准格式重写：`__ModuleLoader__` + `apply/inject/effect` + better-sidebar 双接缝 |
 | 0.1.0 | — | 集成方式不合契约，**不会加载**，已废弃 |
@@ -270,3 +270,13 @@ npm run profile:migrate -- -Profile web -NewSpec 'dsh-opensheet-sidebar@1.0.0' -
 | `Where-Object` 结果的 `.Count` | 命中 1 条是 string（无 `.Count`）、0 条是 `$null`，`Set-StrictMode` 下直接报 `PropertyNotFound` | 一律套 `@(...)` 再取 `.Count` |
 
 发布脚本另外带两道**上传前后都该有的门禁**：名字必须「空闲或属于自己」（`npm view` + `maintainers` 对比 `npm whoami`，防止改到一个别人占用的名字上），以及没有登录会话时直接拒绝（而不是等一个 401）。
+
+## 八、多语言说明 / Sprachen / Langues / Языки / Idiomas / Lingue
+
+本 README 以中文撰写。安装与兼容性速览（本线要求 DSH 0.2.0：`>=0.2.0-rc.1 <0.2.1-0`；安装：`dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`）：
+
+- **Deutsch** — benötigt DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), getestet gegen DSH 0.2.0-rc.1. Installation: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. Die 0.1.x-Wirtslinie wird von den eingefrorenen Zweigen `compat/0.1.7` / `compat/0.1.5` (npm-Tags `dsh-0.1.7` / `dsh-0.1.5`) versorgt.
+- **Français** — nécessite DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), testé avec DSH 0.2.0-rc.1. Installation : `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La lignée d'hôtes 0.1.x est assurée par les branches figées `compat/0.1.7` / `compat/0.1.5` (tags npm `dsh-0.1.7` / `dsh-0.1.5`).
+- **Русский** — требуется DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), протестировано на DSH 0.2.0-rc.1. Установка: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. Линия хостов 0.1.x обслуживается замороженными ветками `compat/0.1.7` / `compat/0.1.5` (npm-теги `dsh-0.1.7` / `dsh-0.1.5`).
+- **Español** — requiere DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), probado con DSH 0.2.0-rc.1. Instalación: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La línea de anfitriones 0.1.x la atienden las ramas congeladas `compat/0.1.7` / `compat/0.1.5` (etiquetas npm `dsh-0.1.7` / `dsh-0.1.5`).
+- **Italiano** — richiede DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), testato su DSH 0.2.0-rc.1. Installazione: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La linea di host 0.1.x è servita dai rami congelati `compat/0.1.7` / `compat/0.1.5` (tag npm `dsh-0.1.7` / `dsh-0.1.5`).
