@@ -49,7 +49,7 @@
 | 设置席位/命令注册 | 本插件不注册设置席位、不注册 `/` 命令（故不涉及 seat-pin 与 description 函数契约） |
 | `dsh.bundle` manifest | `package.json#dsh.bundle.patch` + `dsh.client.platform/inject` |
 | `cordis.patch.yml` | 纯 insert 一行，注释写明 CLI / 手动两种安装方式 |
-| peerDependencies | `@deepseek-ai/*` 用 `>=0.1.5-rc.1 <0.2.0-0`（`-0` 上限，避开预发布 semver 陷阱）；`dsh-better-sidebar` / `react` 标 optional |
+| peerDependencies | `@deepseek-ai/*` 用 `>=0.2.0-rc.1 <0.2.1-0`（`-0` 上限，避开预发布 semver 陷阱；0.2.0 线）；`dsh-better-sidebar` / `react` 标 optional |
 | 目录结构 | `src/ lib/ assets/ tests/ scripts/` + `screenshots.json` + `dsh.plugin.json` + README/CHANGELOG |
 | 零依赖 | **无运行时依赖**：CSV 解析器与熔断器都是本地模块，客户端 bundle 只 externals React（43 KB） |
 | 样式 | 无 CSS 入口 → `styles.css` 由构建内联为字符串，`apply` 里插入一个 `<style>` 并登记 disposer；配色全用 `--dsw-alias-*` 语义 token |
@@ -171,6 +171,8 @@ dsh --profile <profile> --dump-config | Select-String dsh-opensheet-sidebar
 
 | 插件版本 | DSH | 说明 |
 |---------|-----|------|
+| 2.0.0 | `>=0.2.0-rc.1 <0.2.1-0` | 0.2.0 宿主线（`compat/0.2.0` 分支）。纯元数据适配：消费面全部是 `ctx.get(...)` 纯 caller，0.2.0-rc.1 对 0.1.7 插件 API 完全兼容；顺带拉齐 manifest 漂移的 version |
+| 1.0.0 / 1.0.1 | `>=0.1.5-rc.1 <0.2.0-0` | 包身份改名（csv → opensheet）+ 熔断去重；由 `main` 服务 |
 | 0.3.0 | `>=0.1.5-rc.1 <0.2.0-0` | 增加 xlsx/xlsm 工作簿预览（工作表切换）+ 两道 zip 容器闸门 + 占位符完整性门禁 |
 | 0.2.0 | `>=0.1.5-rc.1 <0.2.0-0` | 标准格式重写：`__ModuleLoader__` + `apply/inject/effect` + better-sidebar 双接缝 |
 | 0.1.0 | — | 集成方式不合契约，**不会加载**，已废弃 |
