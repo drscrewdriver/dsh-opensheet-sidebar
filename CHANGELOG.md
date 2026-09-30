@@ -1,5 +1,15 @@
 # Changelog — dsh-opensheet-sidebar
 
+## 2026-10-01 — ⛔ 停维（最终交付）
+
+### Deprecated
+
+- **项目停止维护**：DSH 宿主较新版本已内置 office/表格文件的侧栏预览，本插件不再单独维护、不再发版（含 npm），不参与后续宿主版本线适配。已发布版本仍可安装使用；0.1.x 宿主请使用冻结分支 `compat/0.1.7` / `compat/0.1.5` 的对应版本。
+
+### Added
+
+- i18n 收尾（最终交付）：运行时词典新增 ja/ko、补齐至 9 语言（zh/en/ja/ko/fr/de/it/ru/es），词典注册加 try/catch 硬化；新增 `locale/*.json` 九语言插件元数据（`meta.title` / `meta.description`）与 `./locale/*.json` exports、`locale` files 声明；`lib/` 产物同步重建。
+
 ## 2.0.0 — 2026-09-29
 
 ### Changed

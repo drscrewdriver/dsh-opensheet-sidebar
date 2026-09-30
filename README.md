@@ -2,6 +2,8 @@
 
 [简体中文](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Italiano](README.it.md) | [Русский](README.ru.md) | [Español](README.es.md)
 
+> ⛔ **本项目已停止维护（2026-10-01）。** DSH 宿主较新版本已内置 office/表格文件的侧栏预览，本插件不再单独维护、不再发版，也不参与后续宿主版本线适配。已发布版本仍可安装使用；0.1.x 宿主请使用冻结分支 `compat/0.1.7` / `compat/0.1.5` 的对应版本。
+
 右侧栏表格预览插件（[dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 消费者）：`csv` / `tsv` / `psv` 与 `xlsx` / `xlsm` 都以结构化表格打开，带**熔断保护**——任何输入都不能让侧栏卡死。
 
 > **名字是双关，写在这里免得被当成拼写错误**：`OpenSheet` 同时读作「**打开**表格」（open the sheet，动词）与「**开放标准**的表格」（open-standard sheet —— OpenDocument 那一系的开源表格格式）。一个词说清了它做的两件事：打开，以及用一种不依赖专有库的方式读。

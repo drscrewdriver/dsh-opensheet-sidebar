@@ -2,6 +2,8 @@
 
 [简体中文](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Italiano](README.it.md) | [Русский](README.ru.md) | [Español](README.es.md)
 
+> ⛔ **Questo progetto non è più mantenuto (2026-10-01).** Le versioni recenti dell’host DSH includono un’anteprima integrata nel pannello laterale per file office e di fogli di calcolo; il plugin cessa di essere mantenuto — nessuna pubblicazione futura, nessun adattamento alle future linee dell’host. Le versioni pubblicate restano installabili; per gli host 0.1.x usate le build dai rami congelati `compat/0.1.7` / `compat/0.1.5`.
+
 Plugin di anteprima tabellare per la barra laterale destra (consumatore di [dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar)): i file `csv` / `tsv` / `psv` come `xlsx` / `xlsm` si aprono come tabelle strutturate, con **protezione a interruttore (circuit breaker)** — nessun input può bloccare la barra laterale.
 
 > **Il nome è un gioco di parole, annotato qui perché non venga scambiato per un refuso**: `OpenSheet` si legge sia come «**aprire** il foglio» (open the sheet, verbo) sia come «foglio a **standard aperto**» (open-standard sheet — la famiglia dei formati tabellari open source legata a OpenDocument). Una parola sola dice le due cose che fa: aprire, e leggere in un modo che non dipende da librerie proprietarie.

@@ -2,6 +2,8 @@
 
 [简体中文](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Italiano](README.it.md) | [Русский](README.ru.md) | [Español](README.es.md)
 
+> ⛔ **Dieses Projekt wird nicht mehr gepflegt (2026-10-01).** Neuere DSH-Hosts bringen eine eingebaute Seitenleisten-Vorschau für Office- und Tabellendateien mit; dieses Plugin wird nicht weiter gepflegt — keine weiteren Veröffentlichungen, keine Anpassung an künftige Host-Versionen. Veröffentlichte Versionen bleiben installierbar; für 0.1.x-Hosts die Builds aus den eingefrorenen Zweigen `compat/0.1.7` / `compat/0.1.5` verwenden.
+
 Tabellen-Vorschau-Plugin für die rechte Seitenleiste (Konsument von [dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar)): `csv` / `tsv` / `psv` ebenso wie `xlsx` / `xlsm` werden als strukturierte Tabelle geöffnet, mit **Schutzschalter (Circuit Breaker)** — keine Eingabe kann die Seitenleiste einfrieren.
 
 > **Der Name ist ein Wortspiel, hier vermerkt, damit es nicht als Tippfehler durchgeht**: `OpenSheet` liest sich sowohl als „das Sheet **öffnen**" (open the sheet, Verb) als auch als „Sheet nach **offenem Standard**" (open-standard sheet — die Familie der Open-Source-Tabellenformate rund um OpenDocument). Ein Wort sagt beide Aufgaben: öffnen, und lesen auf eine Weise, die von keiner proprietären Bibliothek abhängt.
