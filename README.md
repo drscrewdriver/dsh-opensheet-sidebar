@@ -1,5 +1,7 @@
 # dsh-opensheet-sidebar
 
+[简体中文](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Italiano](README.it.md) | [Русский](README.ru.md) | [Español](README.es.md)
+
 右侧栏表格预览插件（[dsh-better-sidebar](https://github.com/omdsh-dev/DSH-better-sidebar) 消费者）：`csv` / `tsv` / `psv` 与 `xlsx` / `xlsm` 都以结构化表格打开，带**熔断保护**——任何输入都不能让侧栏卡死。
 
 > **名字是双关，写在这里免得被当成拼写错误**：`OpenSheet` 同时读作「**打开**表格」（open the sheet，动词）与「**开放标准**的表格」（open-standard sheet —— OpenDocument 那一系的开源表格格式）。一个词说清了它做的两件事：打开，以及用一种不依赖专有库的方式读。
