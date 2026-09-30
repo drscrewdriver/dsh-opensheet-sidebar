@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet サイドバー",
+    "description": "CSV/TSV/PSV ファイルや xlsx/xlsm ブックを右サイドバーにソート・フィルタ可能な構造化テーブルとして表示。シートタブとサーキットブレーカー付き。"
+  }
+}

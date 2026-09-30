@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet – Barra lateral",
+    "description": "Muestra archivos CSV/TSV/PSV y libros xlsx/xlsm como una tabla estructurada, ordenable y filtrable en la barra lateral derecha, con pestañas de hoja y cortacircuitos."
+  }
+}

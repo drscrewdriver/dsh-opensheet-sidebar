@@ -10,8 +10,9 @@
 /** Namespace for every key below. */
 export declare const NS = "dsh-opensheet-sidebar";
 /**
- * `en` and `zh` are built in; `fr` / `de` / `it` / `ru` / `es` are community
- * locales registered under the same namespace (key set mirrors `en` exactly).
+ * `en` and `zh` are built in; `fr` / `de` / `it` / `ru` / `es` / `ja` / `ko`
+ * are community locales registered under the same namespace (key set mirrors
+ * `en` exactly). Total: 9 languages.
  */
 export declare const dictionaries: Record<string, Record<string, string>>;
 /** Values substituted into a `{placeholder}` template. */

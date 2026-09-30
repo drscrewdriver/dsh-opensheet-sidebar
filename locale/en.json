@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet Sidebar",
+    "description": "Render CSV/TSV/PSV files and xlsx/xlsm workbooks as a structured, sortable, filterable table in the right sidebar with sheet tabs and a circuit breaker."
+  }
+}

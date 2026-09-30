@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet 侧栏",
+    "description": "在右侧栏中将 CSV/TSV/PSV 文件和 xlsx/xlsm 工作簿渲染为可排序、可筛选的结构化表格，含工作表标签页和熔断保护。"
+  }
+}

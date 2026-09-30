@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet – Panneau latéral",
+    "description": "Affiche les fichiers CSV/TSV/PSV et les classeurs xlsx/xlsm sous forme de tableau structuré, triable et filtrable dans le panneau latéral droit, avec onglets de feuille et disjoncteur."
+  }
+}

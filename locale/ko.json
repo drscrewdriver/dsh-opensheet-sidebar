@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenSheet 사이드바",
+    "description": "CSV/TSV/PSV 파일과 xlsx/xlsm 통합 문서를 오른쪽 사이드바에 정렬·필터 가능한 구조화 테이블로 표시합니다. 시트 탭과 서킷 브레이커 포함."
+  }
+}

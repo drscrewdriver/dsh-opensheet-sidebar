@@ -12,8 +12,9 @@
 export const NS = 'dsh-opensheet-sidebar'
 
 /**
- * `en` and `zh` are built in; `fr` / `de` / `it` / `ru` / `es` are community
- * locales registered under the same namespace (key set mirrors `en` exactly).
+ * `en` and `zh` are built in; `fr` / `de` / `it` / `ru` / `es` / `ja` / `ko`
+ * are community locales registered under the same namespace (key set mirrors
+ * `en` exactly). Total: 9 languages.
  */
 export const dictionaries: Record<string, Record<string, string>> = {
   en: {
@@ -365,6 +366,106 @@ export const dictionaries: Record<string, Record<string, string>> = {
     'table.index': '#',
     'table.sortHint': 'Haz clic para ordenar',
     'table.column': 'columna {n}',
+  },
+  ja: {
+    'tab.title': 'シート',
+    'tab.desc': 'ディスク上の CSV/TSV/PSV または xlsx ファイルを開き、テーブルとして表示します',
+    'viewer.title': 'CSV テーブル',
+    'viewer.xlsx.title': 'スプレッドシートテーブル',
+    'sheet.list': 'ワークシート',
+    'sheet.hidden': 'このシートはブック内で非表示です',
+
+    'picker.title': 'CSV ファイルをここにドロップ',
+    'picker.active': '離すと読み込みます',
+    'picker.hint': 'またはクリックして選択 · .csv / .tsv / .psv',
+    'picker.invalid': '.csv / .tsv / .psv ファイルではありません',
+
+    'state.loading': '解析中…',
+    'state.error': 'このファイルを解析できませんでした',
+    'action.retry': '再試行',
+    'action.openAnother': '別のファイルを開く',
+
+    'stats.rows': '行',
+    'stats.cols': '列',
+    'stats.previewOf': '{total} 件中 {shown} 件を表示',
+    'stats.delimiter': '区切り文字',
+    'stats.sheet': 'シート',
+    'stats.tab': 'TAB',
+    'stats.truncatedSource': 'ホストによる読み取り制限',
+
+    'warning.blockedTitle': 'サイズ超過 — 読み取り前にブロックされました',
+    'warning.truncatedTitle': 'タブの応答性を保つためデータが切り詰められました',
+    'warning.file-size': 'ファイルは {found} — 上限は {limit}',
+    'warning.rows': '少なくとも {found} 行中 {kept} 行を表示（行数上限 {limit}）',
+    'warning.cols': '{found} 列を検出 — 先頭 {limit} 列のみ表示',
+    'warning.cell-length': 'セルに {found} 文字 — {limit} で省略',
+    'warning.source-truncated': 'ホストが読み取りを制限したため、テーブルはファイルの先頭部分です',
+    'warning.parse-error': 'ドキュメントが不正です: {message}',
+    'warning.inflated-bytes': 'このブックは展開後 {found} — 予算 {limit} を超えるため拒否されました',
+    'warning.sheet-bytes': 'ワークシート 1 枚が展開後 {found} — 上限 {limit} を超過',
+    'warning.container-error': 'このブックは読み取れません: {message}',
+
+    'table.filter': '行をフィルタ…',
+    'table.filtered': '{shown} / {total}',
+    'table.empty': '表示するデータがありません',
+    'table.emptyHint': 'ファイルにデータ行がありません',
+    'table.blocked': 'サーキットブレーカーによりブロック',
+    'table.blockedHint': 'ファイルがサイズ上限を超えています。先に縮小してください（head / split / export）。',
+    'table.rows': '{n} 行',
+    'table.clearSort': 'ソートを解除',
+    'table.index': '#',
+    'table.sortHint': 'クリックしてソート',
+    'table.column': '列 {n}',
+  },
+  ko: {
+    'tab.title': '시트',
+    'tab.desc': '디스크에서 CSV/TSV/PSV 또는 xlsx 파일을 열어 테이블로 탐색합니다',
+    'viewer.title': 'CSV 테이블',
+    'viewer.xlsx.title': '스프레드시트 테이블',
+    'sheet.list': '워크시트',
+    'sheet.hidden': '이 시트는 통합 문서에서 숨겨져 있습니다',
+
+    'picker.title': 'CSV 파일을 여기에 드롭하세요',
+    'picker.active': '놓으면 불러옵니다',
+    'picker.hint': '또는 클릭하여 선택 · .csv / .tsv / .psv',
+    'picker.invalid': '.csv / .tsv / .psv 파일이 아닙니다',
+
+    'state.loading': '구문 분석 중…',
+    'state.error': '이 파일을 구문 분석할 수 없습니다',
+    'action.retry': '다시 시도',
+    'action.openAnother': '다른 파일 열기',
+
+    'stats.rows': '행',
+    'stats.cols': '열',
+    'stats.previewOf': '{total}개 중 {shown}개 미리보기',
+    'stats.delimiter': '구분 기호',
+    'stats.sheet': '시트',
+    'stats.tab': 'TAB',
+    'stats.truncatedSource': '호스트 제한 읽기',
+
+    'warning.blockedTitle': '너무 커서 불러올 수 없음 — 읽기 전에 차단됨',
+    'warning.truncatedTitle': '탭 응답성을 유지하기 위해 데이터가 잘렸습니다',
+    'warning.file-size': '파일 크기 {found} — 상한 {limit}',
+    'warning.rows': '최소 {found}행 중 {kept}행 미리보기 (행 상한 {limit})',
+    'warning.cols': '{found}개 열 감지 — 처음 {limit}개만 표시',
+    'warning.cell-length': '셀에 {found}자 포함 — {limit}에서 생략',
+    'warning.source-truncated': '호스트가 읽기를 제한하여 테이블이 파일의 앞부분만 표시합니다',
+    'warning.parse-error': '문서 형식이 잘못되었습니다: {message}',
+    'warning.inflated-bytes': '이 통합 문서는 압축 해제 시 {found} — 예산 {limit}을 초과하여 거부되었습니다',
+    'warning.sheet-bytes': '워크시트 하나가 압축 해제 시 {found} — 상한 {limit}을 초과',
+    'warning.container-error': '이 통합 문서를 읽을 수 없습니다: {message}',
+
+    'table.filter': '행 필터…',
+    'table.filtered': '{shown} / {total}',
+    'table.empty': '표시할 데이터 없음',
+    'table.emptyHint': '파일에 데이터 행이 없습니다',
+    'table.blocked': '서킷 브레이커에 의해 차단됨',
+    'table.blockedHint': '파일이 크기 상한을 초과합니다. 먼저 줄이세요 (head / split / export).',
+    'table.rows': '{n}행',
+    'table.clearSort': '정렬 해제',
+    'table.index': '#',
+    'table.sortHint': '클릭하여 정렬',
+    'table.column': '열 {n}',
   },
 }
 
