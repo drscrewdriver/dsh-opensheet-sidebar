@@ -51,7 +51,7 @@ Dazu kommt `previewRows: 200`: Die Tabelle reserviert ihr DOM-Budget nur für di
 | Settings-Seat / Befehlsregistrierung | Dieses Plugin registriert weder Settings-Seat noch `/`-Befehle (berührt also weder seat-pin noch den description-Funktionsvertrag) |
 | `dsh.bundle`-Manifest | `package.json#dsh.bundle.patch` + `dsh.client.platform/inject` |
 | `cordis.patch.yml` | Reine insert-Zeile, der Kommentar nennt beide Installationswege (CLI / manuell) |
-| peerDependencies | `@deepseek-ai/*` mit `>=0.1.5-rc.1 <0.2.0-0` (`-0`-Obergrenze, um die Semver-Prerelease-Falle zu vermeiden); `dsh-better-sidebar` / `react` als optional markiert |
+| peerDependencies | `@deepseek-ai/*` mit `>=0.2.0-rc.1 <0.2.1-0` (`-0`-Obergrenze, um die Semver-Prerelease-Falle zu vermeiden); `dsh-better-sidebar` / `react` als optional markiert — 0.2.0-Linie |
 | Verzeichnisstruktur | `src/ lib/ assets/ tests/ scripts/` + `screenshots.json` + `dsh.plugin.json` + README/CHANGELOG |
 | Null-Abhängigkeiten | **keine Laufzeit-Abhängigkeiten**: CSV-Parser und Schutzschalter sind lokale Module; der Client-Bundle externalisiert nur React (43 KB) |
 | Styling | Kein CSS-Eingang → `styles.css` wird vom Build als String inlined; `apply` fügt ein `<style>` ein und registriert einen Disposer; die Farben nutzen ausschließlich die semantischen Tokens `--dsw-alias-*` |
@@ -173,6 +173,8 @@ Nichts sehen = Schritt 2 ist nicht wirksam.
 
 | Plugin-Version | DSH | Anmerkung |
 |---------|-----|------|
+| 2.0.0 | `>=0.2.0-rc.1 <0.2.1-0` | 0.2.0-Hostlinie (`main`, befördert aus `compat/0.2.0`). Reine Metadaten-Anpassung: Die Konsumfläche besteht aus reinen `ctx.get(...)`-Aufrufen, 0.2.0-rc.1 hält die Plugin-API von 0.1.7 intakt; gleicht nebenbei die abweichende Manifest-Version an |
+| 1.0.0 / 1.0.1 | `>=0.1.5-rc.1 <0.2.0-0` | Umbenennung der Paket-Identität (csv → opensheet) + Disjunktor-Deduplizierung; versorgt durch die eingefrorenen Zweige `compat/0.1.7` / `compat/0.1.5` |
 | 0.3.0 | `>=0.1.5-rc.1 <0.2.0-0` | Arbeitsmappen-Vorschau für xlsx/xlsm (Blattwechsel) + zwei zip-Container-Schranken + Placeholder-Integritätssperre |
 | 0.2.0 | `>=0.1.5-rc.1 <0.2.0-0` | Neufassung im Standardformat: `__ModuleLoader__` + `apply/inject/effect` + doppelte better-sidebar-Nahtstelle |
 | 0.1.0 | — | Integrationsart verletzt den Vertrag, **lädt nicht**, eingestellt |
@@ -270,3 +272,13 @@ Erst das Neue installieren, dann das Alte entfernen: Scheitert irgendein Schritt
 | `.Count` auf einem `Where-Object`-Ergebnis | 1 Treffer ist ein string (ohne `.Count`), 0 Treffer sind `$null` — unter `Set-StrictMode` sofort `PropertyNotFound` | konsequent in `@(...)` einwickeln, erst dann `.Count` lesen |
 
 Das Veröffentlichungsskript bringt zusätzlich zwei **Schranken mit, die vor wie nach dem Upload gehören sollten**: Der Name muss „frei oder eigener" sein (`npm view` + `maintainers` gegen `npm whoami` verglichen, damit man nicht auf einen fremdbelegten Namen gerät), und ohne Login-Sitzung wird direkt abgelehnt (statt auf einen 401 zu warten).
+
+## 11. Mehrsprachige Hinweise / Sprachen / Langues / Языки / Idiomas / Lingue
+
+Diese README ist auf Deutsch geschrieben. Schnellübersicht für Installation und Kompatibilität (diese Linie benötigt DSH 0.2.0: `>=0.2.0-rc.1 <0.2.1-0`; Installation: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`):
+
+- **Deutsch** — benötigt DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), getestet gegen DSH 0.2.0-rc.1. Installation: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. Die 0.1.x-Wirtslinie wird von den eingefrorenen Zweigen `compat/0.1.7` / `compat/0.1.5` (npm-Tags `dsh-0.1.7` / `dsh-0.1.5`) versorgt.
+- **Français** — nécessite DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), testé avec DSH 0.2.0-rc.1. Installation : `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La lignée d'hôtes 0.1.x est assurée par les branches figées `compat/0.1.7` / `compat/0.1.5` (tags npm `dsh-0.1.7` / `dsh-0.1.5`).
+- **Русский** — требуется DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), протестировано на DSH 0.2.0-rc.1. Установка: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. Линия хостов 0.1.x обслуживается замороженными ветками `compat/0.1.7` / `compat/0.1.5` (npm-теги `dsh-0.1.7` / `dsh-0.1.5`).
+- **Español** — requiere DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), probado con DSH 0.2.0-rc.1. Instalación: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La línea de anfitriones 0.1.x la atienden las ramas congeladas `compat/0.1.7` / `compat/0.1.5` (etiquetas npm `dsh-0.1.7` / `dsh-0.1.5`).
+- **Italiano** — richiede DSH 0.2.0 (`>=0.2.0-rc.1 <0.2.1-0`), testato su DSH 0.2.0-rc.1. Installazione: `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`. La linea di host 0.1.x è servita dai rami congelati `compat/0.1.7` / `compat/0.1.5` (tag npm `dsh-0.1.7` / `dsh-0.1.5`).

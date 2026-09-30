@@ -1,5 +1,19 @@
 # Änderungsprotokoll — dsh-opensheet-sidebar
 
+## 2.0.0 — 2026-09-29
+
+### Geändert
+
+- **Hostlinie auf DSH 0.2.0 umgestellt** (`main`, befördert aus `compat/0.2.0`): `engines.dsh` und der `@deepseek-ai/dsh-client-locale`-Peer wechseln von `>=0.1.5-rc.1 <0.2.0-0` zu `>=0.2.0-rc.1 <0.2.1-0` (rc-Fenster-Pinning; ab 0.2.1 neu zu bewerten). Reine Metadaten-Anpassung — die Konsumfläche besteht aus reinen `ctx.get(...)`-Aufrufen (mit lokalen Schnittstellendefinitionen), 0.2.0-rc.1 ist zur Plugin-API von 0.1.7 voll kompatibel, null Codeänderungen. Die 0.1.x-Linie (0.1.5/0.1.7) wird weiter von den eingefrorenen Zweigen `compat/0.1.7` / `compat/0.1.5` (≤1.0.1) versorgt.
+- Abhängigkeitsbaum auf die neue Linie aktualisiert, Lockfile neu generiert.
+- **Nebenbei Manifest-Drift beglichen**: Die version in `dsh.plugin.json` war auf 1.0.0 stehen geblieben (1.0.1 änderte nur package.json); sie wird diesmal zusammen mit `package.json` auf 2.0.0 angezogen, engines an beiden Stellen im selben Bereich.
+
+### Dokumentation (2026-09-29 — keine Neuveröffentlichung)
+
+- Branch-Struktur zurück in Position: `main` wird zur 0.2.0-Linie (aus `compat/0.2.0`); die 0.1.x-Hostlinie wird von den eingefrorenen Zweigen `compat/0.1.7` / `compat/0.1.5` versorgt. npm-Zuordnung unverändert: `dsh-0.2.0` → diese Linie, `dsh-0.1.7` / `dsh-0.1.5` → 0.1.x-Linie.
+- Installation (diese Linie): `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`.
+- Die README erhielt eine Installations- und Kompatibilitätsübersicht in fünf Sprachen (de/fr/ru/es/it).
+
 ## 1.0.1 — 2026-09-25
 
 Deduplizierung des Schutzschalters: Wird eine Dimension ausgelöst, kommt nur noch eine einzige Warnung heraus. Die Doppelwarnungen der 1.0.0 entstanden dadurch, dass Zeilenlimit und Vorschau-Budget jeweils eine eigene `rows`-Warnung ausgaben.

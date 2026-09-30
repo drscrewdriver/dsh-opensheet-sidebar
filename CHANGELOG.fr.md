@@ -1,5 +1,19 @@
 # Journal des modifications — dsh-opensheet-sidebar
 
+## 2.0.0 — 2026-09-29
+
+### Modifié
+
+- **Ligne d'hôte migrée vers DSH 0.2.0** (`main`, promue depuis `compat/0.2.0`) : `engines.dsh` et la dépendance pair `@deepseek-ai/dsh-client-locale` passent de `>=0.1.5-rc.1 <0.2.0-0` à `>=0.2.0-rc.1 <0.2.1-0` (verrouillage sur la fenêtre rc ; à réévaluer à partir de 0.2.1). Adaptation limitée aux métadonnées — la surface de consommation est constituée d'appels purs `ctx.get(...)` (avec définitions d'interfaces locales), 0.2.0-rc.1 est totalement compatible avec l'API plugin de 0.1.7, zéro modification de code. La ligne 0.1.x (0.1.5/0.1.7) reste servie par les branches figées `compat/0.1.7` / `compat/0.1.5` (≤1.0.1).
+- Arbre de dépendances rafraîchi sur la nouvelle ligne, lockfile régénéré.
+- **Alignement au passage de la dérive du manifest** : la version de `dsh.plugin.json` était restée bloquée à 1.0.0 (1.0.1 n'avait modifié que package.json) ; elle est alignée cette fois sur 2.0.0 avec `package.json`, même plage pour les deux engines.
+
+### Documentation (2026-09-29 — sans republication)
+
+- Remise en place de la structure de branches : `main` devient la ligne 0.2.0 (depuis `compat/0.2.0`) ; la ligne d'hôte 0.1.x est servie par les branches figées `compat/0.1.7` / `compat/0.1.5`. Mappage npm inchangé : `dsh-0.2.0` → cette ligne, `dsh-0.1.7` / `dsh-0.1.5` → ligne 0.1.x.
+- Installation (cette ligne) : `dsh plugin --profile <profile> add dsh-opensheet-sidebar@dsh-0.2.0`.
+- La README s'est dotée d'un aperçu d'installation et de compatibilité en cinq langues (de/fr/ru/es/it).
+
 ## 1.0.1 — 2026-09-25
 
 Déduplication du disjoncteur : lorsqu'une dimension est déclenchée, une seule alerte sort. Les alertes dupliquées de la 1.0.0 venaient de ce que le plafond de lignes et le budget d'aperçu émettaient chacun un avertissement `rows`.
